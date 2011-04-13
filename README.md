@@ -4,7 +4,7 @@ The Aether Ant tasks use the Aether library to resolve dependencies and install 
 
 == Settings
 
-The Ant tasks are thightly integrated with the usual maven settings.xml. By default, the usual $HOME/.m2/settings.xml is used. The <settings/> definition is used to change that:
+The Ant tasks are tightly integrated with the usual maven settings.xml. By default, the usual $HOME/.m2/settings.xml is used. The <settings/> definition is used to change that:
 
     <settings file="my-settings.xml"/>
 
