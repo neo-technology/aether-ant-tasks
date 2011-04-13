@@ -57,7 +57,7 @@ public class Settings
         checkAttributesAllowed();
         this.file = file;
 
-        AntRepoSys.getInstance( getProject() ).setUserSettings( globalFile );
+        AntRepoSys.getInstance( getProject() ).setUserSettings( file );
     }
 
     public File getGlobalFile()
