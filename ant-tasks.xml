@@ -1,0 +1,95 @@
+<!--
+dependency coordinates:
+a) compound attribute (groupId:artifactId:versionRange:classifier:type:scope)
+b) individual attributes
+-->
+
+<!-- =========================================================================
+                            C O N F I G U R A T I O N
+     ========================================================================= -->
+
+<!-- interop with Maven regarding local repo location and auth, proxy and mirror setup -->
+<settings file="my-settings.xml" />
+
+<localRepository basedir="" />
+
+<!-- global proxy settings -->
+<proxy host="" port="" type="http" nonProxyHosts="foo,bar" />
+
+<mirror id="" url="" mirrorOf=""/>
+
+<!-- =========================================================================
+                             D I S T R I B U T I O N
+     ========================================================================= -->
+
+<!-- describe the project output, i.e. group of artifacts to be installed/deployed later on -->
+<artifacts pomref="id" file="my.jar" id="output">
+  <!-- main artifact either via file attribute or as <artifact> element without classifier -->
+  <artifact file="my.jar" />
+  <artifact file="sources.jar" type="(default to ext)" classifier="sources" />
+  <artifact file="javadoc.jar" type="(default to ext)" classifier="javadoc" />
+</artifacts>
+
+<install artifactsref="output" />
+
+<deploy artifactsref="output">
+  <remoteRepository/>
+</deploy>
+
+<!-- =========================================================================
+                               R E S O L U T I O N
+     ========================================================================= -->
+
+<!-- describe a dependency set -->
+<dependencies id="deps" transitive="true|false">
+  <!-- use a local/remote POM as a starting point -->
+  <pom file="my.pom" />
+  <pom coords="g:a:v" />
+  <pom groupId="g" artifactId="a" version="v">
+    <activeProfile if="fo">foo</activeProfile>
+    <inactiveProfile unless="bar">bar</inactiveProfile>
+  </pom>
+
+  <!-- manual dependency list, overrides POM if conflicting -->
+  <dependency coords="g:a:v" />
+  <dependency groupId="g" artifactId="a" version="v" classifier="c" type="jar" scope="runtime">
+    <exclusion coords="g:a" />
+    <exclusion groupId="g" artifactId="a" />
+  </dependency>
+  
+  <!-- global exclusions -->
+  <exclusion coords="g:a" />
+</dependencies>
+
+<remoteRepositories id="my.repos">
+  <remoteRepository url="" contentType="default" id="rso">
+    <authentication username="" password="" privateKeyFile="" passphrase="" />
+    <!-- per-repository proxy -->
+    <proxy host="" port="" authref="id" />
+  </remoteRepository>
+</remoteRepositories>
+
+<!-- based on dependency graph, resolve artifacts or just their source/javadoc attachments, scope filtering, class path creation -->
+<resolve dependenciesref="deps">
+  <!-- <dependencies refid="deps" /> -->
+  <remoteRepositories refid="my.repos"/>
+  
+  <!-- create a path with the specified id for the given classpath scope -->
+  <path refid="my.path" classpath="compile" />
+  <!-- create a path from the given exact scopes -->
+  <path refid="my.path" scopes="compile,runtime" />
+  <!-- create a path from the given exact scopes -->
+  <path refid="my.path" scopes="!system" />
+
+  <!-- create a resource collection, copy the files to the given directory using the specified layout -->
+  <files id="my.resource.collection" classpath="compile" dir="lib" layout="<artifactId>-<version>-<classifier>.<extension>"/>
+  <!-- create a resource collection of the source attachments -->
+  <files id="my.resource.collection" attachments="sources|javadoc">
+    <include>org.apache.maven:*</include>
+    <exclude>*:maven-core</exclude>
+  </files>
+</resolve>
+
+<!--
+Shall we provide a <libdir> element within <resolve> to nicely dump the JARs somewhere or better have some file name mapper?
+-->

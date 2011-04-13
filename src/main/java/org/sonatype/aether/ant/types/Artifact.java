@@ -1,0 +1,135 @@
+package org.sonatype.aether.ant.types;
+
+/*******************************************************************************
+ * Copyright (c) 2010-2011 Sonatype, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Apache License v2.0 which accompanies this distribution.
+ * The Eclipse Public License is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ * The Apache License v2.0 is available at
+ *   http://www.apache.org/licenses/LICENSE-2.0.html
+ * You may elect to redistribute this code under either of these licenses.
+ *******************************************************************************/
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.DataType;
+import org.apache.tools.ant.types.Reference;
+
+/**
+ * @author Benjamin Bentmann
+ */
+public class Artifact
+    extends DataType
+    implements ArtifactContainer
+{
+
+    private File file;
+
+    private String type;
+
+    private String classifier;
+
+    protected Artifact getRef()
+    {
+        return (Artifact) getCheckedRef();
+    }
+
+    public void validate( Task task )
+    {
+        if ( isReference() )
+        {
+            getRef().validate( task );
+        }
+        else
+        {
+            if ( file == null )
+            {
+                throw new BuildException( "You must specify the 'file' for the artifact" );
+            }
+            else if ( !file.isFile() )
+            {
+                throw new BuildException( "The artifact file " + file + " does not exist" );
+            }
+            if ( type == null || type.length() <= 0 )
+            {
+                throw new BuildException( "You must specify the 'type' for the artifact" );
+            }
+        }
+    }
+
+    public void setRefid( Reference ref )
+    {
+        if ( file != null || type != null || classifier != null )
+        {
+            throw tooManyAttributes();
+        }
+        super.setRefid( ref );
+    }
+
+    public File getFile()
+    {
+        if ( isReference() )
+        {
+            return getRef().getFile();
+        }
+        return file;
+    }
+
+    public void setFile( File file )
+    {
+        checkAttributesAllowed();
+        this.file = file;
+
+        if ( file != null && type == null )
+        {
+            String name = file.getName();
+            int period = name.lastIndexOf( '.' );
+            if ( period >= 0 )
+            {
+                type = name.substring( period + 1 );
+            }
+        }
+    }
+
+    public String getType()
+    {
+        if ( isReference() )
+        {
+            return getRef().getType();
+        }
+        return ( type != null ) ? type : "";
+    }
+
+    public void setType( String type )
+    {
+        checkAttributesAllowed();
+        this.type = type;
+    }
+
+    public String getClassifier()
+    {
+        if ( isReference() )
+        {
+            return getRef().getClassifier();
+        }
+        return ( classifier != null ) ? classifier : "";
+    }
+
+    public void setClassifier( String classifier )
+    {
+        checkAttributesAllowed();
+        this.classifier = classifier;
+    }
+
+    public List<Artifact> getArtifacts()
+    {
+        return Collections.singletonList( this );
+    }
+
+}
