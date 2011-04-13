@@ -62,12 +62,12 @@ See the Apache License Version 2.0 for the specific language governing permissio
 
   <issueManagement>
     <system>jira</system>
-    <url>https://issues.sonatype.org/browse/AETHER</url>
+    <url>https://issues.sonatype.org/browse/AETHERANT</url>
   </issueManagement>
 
   <ciManagement>
     <system>Hudson</system>
-    <url>https://grid.sonatype.org/ci/job/Aether/</url>
+    <url>https://grid.sonatype.org/ci/job/AetherAntTasks</url>
   </ciManagement>
 
   <licenses>
