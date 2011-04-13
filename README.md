@@ -37,7 +37,9 @@ Remote repositories may be defined directly:
 
     <remoterepo id="distrepo" url="..." authref="distauth"/>
 
-    <remoterepositos id="all">
+Multiple repositories may be used as a group in every place that is legal for a remote repository:
+
+    <remoterepos id="all">
         <remoterepo refid="rso"/>
         <remoterepo refid="rao"/>
         <remoterepo refid="distrepo"/>
@@ -50,6 +52,8 @@ Remote repositories may be defined directly:
 == Project
 
 === POM
+
+The POM is the data type used to determine the target for the install and deploy tasks. They will use the POM that is set without an id by default.
 
     <pom file="pom.xml" id="pom"/>
     <pom groupId="g" artifactId="a" version="v"/>
@@ -70,16 +74,29 @@ If a POM is set via a file parameter and without any id, the properties interpol
 
 === Dependencies
 
+    <dependency coords="g:a:v" />
+
+    <dependency groupId="g" artifactId="a" version="v" classifier="c" type="jar" scope="runtime">
+	<exclusion coords="g:a" />
+	<exclusion groupId="g" artifactId="a" />
+    </dependency>
+
     <dependencies id="deps">
+    	<dependency refid="first"/>
+    	<dependency refid="second"/>
     </dependencies>
 
 == Tasks
 
 === Install
 
+You need to set a POM that references a file for the install task to work.
+
     <install artifactsref="producedArtifacts"/>
 
 === Deploy
+
+You need to set a POM that references a file for the deploy task to work.
 
     <deploy>
         <remoterepo refid="distrepo" authref="distauth"/>
