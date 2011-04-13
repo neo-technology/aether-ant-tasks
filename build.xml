@@ -24,7 +24,6 @@
 
     <aether:pom file="pom.xml" id="main"/>
 
-
     <target name="compile">
 	<aether:resolve>
 	    <dependencies>

@@ -14,37 +14,29 @@ package org.sonatype.aether.ant;
 
 import java.io.File;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.junit.Test;
+import org.apache.tools.ant.BuildFileTest;
 
 public abstract class AntBuildsTest
+    extends BuildFileTest
 {
 
-    protected File buildFile;
+    protected static File projectDir;
 
-    @Test
-    public void testBuildFile()
+    protected static File antDir;
+
+    static
     {
-        if ( buildFile == null )
-        {
-            return;
-        }
-        executeBuildFile( this.buildFile );
-        assertBuild( this.buildFile );
+        projectDir = new File( "." );
+        antDir = new File( projectDir, "src/test/ant" );
+        System.setProperty( "project.dir", projectDir.getAbsolutePath() );
+        System.setProperty( "project.dir.ant", antDir.getAbsolutePath() );
     }
 
-    public static void executeBuildFile( File buildFile )
+    @Override
+    protected void setUp()
+        throws Exception
     {
-        Project p = new Project();
-        p.setUserProperty( "ant.file", buildFile.getAbsolutePath() );
-        p.init();
-        ProjectHelper helper = ProjectHelper.getProjectHelper();
-        p.addReference( "ant.projectHelper", helper );
-        helper.parse( p, buildFile );
-        p.executeTarget( p.getDefaultTarget() );
+        super.setUp();
     }
-
-    public abstract void assertBuild( File buildFile );
 
 }

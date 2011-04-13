@@ -17,15 +17,31 @@
        <!ENTITY common SYSTEM "common.xml">
 ]>
 
-<project xmlns:repo="antlib:org.sonatype.aether.ant" default="test">
+<project xmlns:repo="antlib:org.sonatype.aether.ant">
 
 	&common;
 	
-	<target name="test">
-		<repo:install>
-			<repo:pom file="dummy-pom.xml" />
-			<repo:artifact classifier="ant" file="common.xml" />
+	<repo:pom file="${project.dir.ant}/dummy-pom.xml" id="pom"/>
+	<repo:artifact classifier="ant" file="${project.dir.ant}/common.xml" id="ant"/>
+	
+	<target name="setUp">
+		<touch file="${project.dir.ant}/dummy-pom.xml"/>
+		<touch file="${project.dir.ant}/common.xml"/>
+	</target>
+	
+	
+	<target name="testDefaultRepo" depends="setUp">
+		<repo:install pomref="pom">
+			<repo:artifact refid="ant"/>
 		</repo:install>
 	</target>
+
+	<target name="testCustomRepo" depends="setUp">
+		<repo:localrepo dir="${project.dir}/target/local-repo-custom" />
+		<repo:install pomref="pom">
+			<repo:artifact refid="ant"/>
+		</repo:install>
+	</target>
+
 
 </project>
