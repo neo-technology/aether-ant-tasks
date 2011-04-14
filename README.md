@@ -77,7 +77,8 @@ Project settings deal with locally availabe information about the build.
 === POM
 
 The POM is the data type used to determine the target for the install and
-deploy tasks. They will use the POM that is set without an id by default.
+deploy tasks. If you define a POM without an id based on a full pom.xml file,
+that POM will be used by default for install and deploy.
 
     <pom file="pom.xml" id="pom"/>
     <pom groupId="g" artifactId="a" version="v"/>
@@ -120,6 +121,8 @@ transitively.
     </dependencies>
 
 == Tasks
+
+
 
 === Install
 
