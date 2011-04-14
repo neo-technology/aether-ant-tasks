@@ -61,6 +61,7 @@ import org.sonatype.aether.ant.types.Dependency;
 import org.sonatype.aether.ant.types.Exclusion;
 import org.sonatype.aether.ant.types.LocalRepository;
 import org.sonatype.aether.ant.types.Mirror;
+import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.ant.types.Proxy;
 import org.sonatype.aether.ant.types.RemoteRepositories;
 import org.sonatype.aether.ant.types.RemoteRepository;
@@ -135,6 +136,8 @@ public class AntRepoSys
     private List<Authentication> authentications = new CopyOnWriteArrayList<Authentication>();
 
     private LocalRepository localRepository;
+
+    private Pom defaultPom;
 
     private static <T> boolean eq( T o1, T o2 )
     {
@@ -552,7 +555,7 @@ public class AntRepoSys
         this.userSettings = file;
     }
 
-    private File getUserSettings()
+    /* UT */File getUserSettings()
     {
         if ( userSettings == null )
         {
@@ -580,7 +583,7 @@ public class AntRepoSys
         this.globalSettings = file;
     }
 
-    private File getGlobalSettings()
+    /* UT */File getGlobalSettings()
     {
         if ( globalSettings == null )
         {
@@ -729,6 +732,16 @@ public class AntRepoSys
             }
         }
         return props;
+    }
+
+    public void setDefaultPom( Pom pom )
+    {
+        this.defaultPom = pom;
+    }
+
+    public Pom getDefaultPom()
+    {
+        return defaultPom;
     }
 
 }

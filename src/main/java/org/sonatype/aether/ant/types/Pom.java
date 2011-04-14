@@ -50,11 +50,11 @@ public class Pom
         return (Pom) getCheckedRef();
     }
 
-    public void validate( Task task )
+    public void validate()
     {
         if ( isReference() )
         {
-            getRef().validate( task );
+            getRef().validate();
         }
         else
         {
@@ -74,6 +74,7 @@ public class Pom
                 }
             }
         }
+
     }
 
     public void setRefid( Reference ref )
@@ -111,7 +112,9 @@ public class Pom
         {
             throw ambiguousSource();
         }
+
         this.file = file;
+
     }
 
     public String getGroupId()
@@ -266,6 +269,13 @@ public class Pom
     @Override
     public void execute()
     {
+        validate();
+
+        if ( file != null && id == null )
+        {
+            AntRepoSys.getInstance( getProject() ).setDefaultPom( this );
+        }
+
         Model model = getModel( this );
 
         ModelValueExtractor extractor = new ModelValueExtractor( id, model, getProject() );

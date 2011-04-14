@@ -23,6 +23,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Reference;
 import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.ant.AntRepoSys;
 import org.sonatype.aether.ant.types.Artifact;
 import org.sonatype.aether.ant.types.Artifacts;
 import org.sonatype.aether.ant.types.Pom;
@@ -62,6 +63,10 @@ public abstract class AbstractDistTask
                 duplicates.put( key, artifact.getFile() );
             }
         }
+
+        Pom defaultPom = AntRepoSys.getInstance( getProject() ).getDefaultPom();
+        pom = pom != null ? pom : defaultPom;
+
         if ( pom == null )
         {
             throw new BuildException( "You must specify the <pom file=\"...\"> element"
@@ -125,6 +130,11 @@ public abstract class AbstractDistTask
 
     protected Pom getPom()
     {
+        if ( pom == null )
+        {
+            return AntRepoSys.getInstance( getProject() ).getDefaultPom();
+        }
+
         return pom;
     }
 
