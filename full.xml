@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:repo="antlib:org.sonatype.aether.ant" default="test">
+
+	<taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
+		<classpath>
+			<fileset dir="target" includes="aether-ant-tasks-*.jar" />
+		</classpath>
+	</taskdef>
+
+	<repo:authentication id="auth" username="user" password="pass" servers="rso;rao" />
+
+	<!-- repo:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" /-->
+
+	<!--repo:proxy host="" port="1" type="http" nonProxyHosts="foo,bar" authref="auth">
+  </repo:proxy-->
+
+	<repo:localrepo dir="${basedir}/target/local-repo" />
+	<!--<repo:remoterepo id="rso" url="http://repository.sonatype.org/" type="default" releases="true" snapshots="true" updates="always" checksums="fail">-->
+		<!--<repo:authentication refid="auth" />-->
+	<!--</repo:remoterepo>-->
+
+	<repo:remoterepos id="repositories">
+		<repo:remoterepo refid="rso" />
+	</repo:remoterepos>
+
+	<repo:artifact id="pom" file="pom.xml" type="pom" classifier="v4" />
+
+	<repo:artifacts id="output">
+		<repo:artifact classifier="ant" file="build.xml" />
+	</repo:artifacts>
+
+	<target name="test">
+		<property name="java.version" value="2.0" />
+		<echo>${java.version}</echo>
+		<echo>Hello ${java.home}</echo>
+		<echo>${pom.version} ${pom.properties.project.build.sourceEncoding}</echo>
+		<repo:pom file="dummy-pom.xml" id="mainPom"/>
+		<echo>${pom.version} ${pom.properties.project.build.sourceEncoding}</echo>
+
+		<repo:resolve>
+			<dependencies>
+				<dependency coords="org.apache.maven:maven-profile:2.0.6" />
+				<exclusion artifactId="junit" />
+				<exclusion groupId="org.codehaus.plexus" />
+			</dependencies>
+			<path refid="foo" classpath="compile" />
+			<files refid="files" attachments="javadoc" dir="target/sources" layout="{artifactId}-{classifier}.{extension}" />
+		</repo:resolve>
+
+		<copy todir="target/dump">
+			<fileset refid="files" />
+		</copy>
+
+		<echo>${toString:foo}</echo>
+
+		<repo:resolve>
+			<dependencies>
+				<dependency coords="junit:junit:4.8.1" />
+			</dependencies>
+			<path refid="foo" classpath="compile" />
+			<properties prefix="dep." />
+		</repo:resolve>
+
+		<echo>${dep.junit:junit:jar}</echo>
+		<echo>${toString:foo}</echo>
+
+		<echo>RESOLVE WITH TWO CLASSPATHS TARGET</echo>
+
+		<repo:resolve>
+			<dependencies>
+			    <pom file="pom.xml"/>
+			</dependencies>
+			<path refid="cp.compile" classpath="compile" />
+			<path refid="cp.test" classpath="test" />
+		</repo:resolve>
+		
+		<echo>${toString:cp.compile}</echo>
+		<echo>${toString:cp.test}</echo>
+		
+	</target>
+
+	<repo:authentication refid="auth" />
+
+	<repo:install artifactsref="output">
+		<pom file="dummy-pom.xml" />
+	</repo:install>
+
+	<repo:deploy artifactsref="output">
+		<pom file="dummy-pom.xml" />
+		<repo id="test" url="file://${basedir}/target/dist-repo" />
+	</repo:deploy>
+
+	<repo:dependencies>
+		<pom file="pom.xml" />
+		<exclusion coords="g:a" />
+		<dependency coords="g:a:v:compile">
+			<exclusion coords="g:c" />
+		</dependency>
+		<exclusion coords="g:b" />
+	</repo:dependencies>
+
+</project>

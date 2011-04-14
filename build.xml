@@ -1,99 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns:repo="antlib:org.sonatype.aether.ant" default="test">
+<project xmlns:aether="antlib:org.sonatype.aether.ant" default="install">
 
-	<taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
-		<classpath>
-			<fileset dir="target" includes="aether-ant-tasks-*.jar" />
-		</classpath>
-	</taskdef>
+    <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
+	<classpath>
+	    <fileset dir="target" includes="aether-ant-tasks-*.jar" />
+	</classpath>
+    </taskdef>
 
-	<repo:authentication id="auth" username="user" password="pass" servers="rso;rao" />
+    <aether:settings file="empty-settings.xml"/>
 
-	<!-- repo:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" /-->
+    <!--<aether:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" />-->
 
-	<!--repo:proxy host="" port="1" type="http" nonProxyHosts="foo,bar" authref="auth">
-  </repo:proxy-->
+    <aether:localrepo dir="${basedir}/target/ant-build/local-repo" />
 
-	<repo:localrepo dir="${basedir}/target/local-repo" />
-	<repo:remoterepo id="rso" url="http://repository.sonatype.org/" type="default" releases="true" snapshots="false" updates="always" checksums="fail">
-		<repo:releases enabled="true" />
-		<repo:snapshots enabled="true" updates="daily" checksums="warn" />
-		<repo:authentication refid="auth" />
-	</repo:remoterepo>
+    <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="always" checksums="fail"/>
 
-	<repo:remoterepos id="repositories">
-		<repo:remoterepo refid="rso" />
-	</repo:remoterepos>
+    <aether:remoterepos id="aether.repositories">
+	<aether:remoterepo refid="rso" />
+    </aether:remoterepos>
 
-	<repo:artifact id="pom" file="pom.xml" type="pom" classifier="v4" />
+    <aether:remoterepo id="dist" url="file://target/ant-build/dist-repo" />
 
-	<repo:artifacts id="output">
-		<repo:artifact classifier="ant" file="build.xml" />
-	</repo:artifacts>
+    <aether:pom file="pom.xml" id="main"/>
 
-	<target name="test">
-		<property name="java.version" value="2.0" />
-		<echo>${java.version}</echo>
-		<echo>Hello ${java.home}</echo>
-		<echo>${pom.version} ${pom.properties.project.build.sourceEncoding}</echo>
-		<repo:pom file="dummy-pom.xml" id="mainPom"/>
-		<echo>${pom.version} ${pom.properties.project.build.sourceEncoding}</echo>
 
-		<repo:resolve>
-			<dependencies>
-				<dependency coords="org.apache.maven:maven-profile:2.0.6" />
-				<exclusion artifactId="junit" />
-				<exclusion groupId="org.codehaus.plexus" />
-			</dependencies>
-			<path refid="foo" classpath="compile" />
-			<files refid="files" attachments="javadoc" dir="target/sources" layout="{artifactId}-{classifier}.{extension}" />
-		</repo:resolve>
+    <target name="compile">
+	<aether:resolve>
+	    <dependencies>
+		<pom refid="main"/>
+	    </dependencies>
+	    <path refid="cp.compile" classpath="compile" />
+	</aether:resolve>
+    </target>
 
-		<copy todir="target/dump">
-			<fileset refid="files" />
-		</copy>
+    <target name="test" depends="compile">
+	<aether:resolve>
+	    <dependencies>
+		<pom refid="main"/>
+	    </dependencies>
+	    <path refid="cp.test" classpath="test" />
+	</aether:resolve>
+    </target>
 
-		<echo>${toString:foo}</echo>
-
-		<repo:resolve>
-			<dependencies>
-				<dependency coords="junit:junit:4.8.1" />
-			</dependencies>
-			<path refid="foo" classpath="compile" />
-			<properties prefix="dep." />
-		</repo:resolve>
-
-		<echo>${dep.junit:junit:jar}</echo>
-		<echo>${toString:foo}</echo>
-
-		<repo:resolve>
-			<dependencies pomRef="mainPom"/>
-			<path refid="mainPomCP" classpath="compile" />
-		</repo:resolve>
-		
-		<echo>${toString:mainPomCP}</echo>
-		
-	</target>
-
-	<repo:authentication refid="auth" />
-
-	<repo:install artifactsref="output">
-		<pom file="dummy-pom.xml" />
-	</repo:install>
-
-	<repo:deploy artifactsref="output">
-		<pom file="dummy-pom.xml" />
-		<repo id="test" url="file://${basedir}/target/dist-repo" />
-	</repo:deploy>
-
-	<repo:dependencies>
-		<pom file="pom.xml" />
-		<exclusion coords="g:a" />
-		<dependency coords="g:a:v:compile">
-			<exclusion coords="g:c" />
-		</dependency>
-		<exclusion coords="g:b" />
-	</repo:dependencies>
+    <target name="install" depends="test">
+	<aether:install>
+	    <pom refid="main"/>
+	</aether:install>
+    </target>
 
 </project>
