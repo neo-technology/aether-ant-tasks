@@ -38,6 +38,7 @@ import org.sonatype.aether.ant.types.Dependencies;
 import org.sonatype.aether.ant.types.Dependency;
 import org.sonatype.aether.ant.types.Exclusion;
 import org.sonatype.aether.ant.types.LocalRepository;
+import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.ant.types.RemoteRepositories;
 import org.sonatype.aether.ant.types.RemoteRepository;
 import org.sonatype.aether.artifact.Artifact;
@@ -157,6 +158,16 @@ public class Resolve
         {
             consumer.validate();
         }
+
+        Pom pom = AntRepoSys.getInstance( getProject() ).getDefaultPom();
+        if ( dependencies == null && pom != null )
+        {
+            dependencies = new Dependencies();
+            dependencies.setProject( getProject() );
+            getProject().addReference( "resolve.default.pom", pom );
+            dependencies.setPomRef( new Reference( getProject(), "resolve.default.pom" ) );
+        }
+
         if ( dependencies != null )
         {
             dependencies.validate( this );
@@ -389,9 +400,8 @@ public class Resolve
         extends ArtifactConsumer
     {
 
-        private static final String DEFAULT_LAYOUT =
-            Layout.GID_DIRS + "/" + Layout.AID + "/" + Layout.BVER + "/" + Layout.AID + "-" + Layout.VER + "-"
-                + Layout.CLS + "." + Layout.EXT;
+        private static final String DEFAULT_LAYOUT = Layout.GID_DIRS + "/" + Layout.AID + "/" + Layout.BVER + "/"
+            + Layout.AID + "-" + Layout.VER + "-" + Layout.CLS + "." + Layout.EXT;
 
         private String refid;
 
@@ -585,7 +595,7 @@ public class Resolve
         {
             createRequests( node, new LinkedList<DependencyNode>() );
         }
-        
+
         private void createRequests( DependencyNode node, LinkedList<DependencyNode> parents )
         {
             if ( node.getDependency() != null )

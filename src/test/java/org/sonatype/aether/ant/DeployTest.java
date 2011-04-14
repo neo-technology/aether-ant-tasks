@@ -4,12 +4,14 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
 
-import org.apache.tools.ant.FileScanner;
-import org.apache.tools.ant.util.FileUtils;
 import org.sonatype.aether.test.util.TestFileUtils;
 
+/*
+ * still missing:
+ * - deploy snapshots/releases into correct repos
+ */
 public class DeployTest
     extends AntBuildsTest
 {
@@ -62,10 +64,21 @@ public class DeployTest
         executeTarget( "testDeployOverrideGlobalPomByRef" );
 
         assertLogContaining( "Uploading" );
-        System.err.println( getLog() );
 
         assertUpdatedFile( tstamp, distRepoPath, "test/test/0.1-SNAPSHOT/maven-metadata.xml" );
         assertUpdatedFile( tstamp, distRepoPath, "test/other/0.1-SNAPSHOT/maven-metadata.xml" );
+    }
+
+    public void testDeployAttachedArtifact()
+    {
+        executeTarget( "testDeployAttachedArtifact" );
+
+        assertLogContaining( "Uploading" );
+
+        File dir = new File(distRepoPath, "test/test/0.1-SNAPSHOT/" );
+        String[] files = dir.list();
+        assertThat( "attached artifact not found: " + Arrays.toString( files ), files,
+                    new ArrayContainsAtLeastOnce( endsWith( "-ant.xml" ) ) );
     }
 
     private void assertUpdatedFile( long tstamp, File repoPath, String path )

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010-2011 Sonatype, Inc.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    and Apache License v2.0 which accompanies this distribution.
+    The Eclipse Public License is available at
+      http://www.eclipse.org/legal/epl-v10.html
+    The Apache License v2.0 is available at
+      http://www.apache.org/licenses/LICENSE-2.0.html
+    You may elect to redistribute this code under either of these licenses.
+
+-->
+
+<!DOCTYPE project [
+       <!ENTITY common SYSTEM "common.xml">
+]>
+
+<project xmlns:repo="antlib:org.sonatype.aether.ant">
+
+	&common;
+
+	  <repo:remoterepo id="rso" url="https://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="always" checksums="fail"/>
+	  <repo:remoterepos id="aether.repositories">
+	    <repo:remoterepo refid="rso"/>
+	  </repo:remoterepos>
+	
+	<target name="setUp">
+		<delete dir="${project.dir}/target/resolvetest-local-repo"/>
+	</target>
+	
+	<target name="testResolveGlobalPom">
+		<repo:pom file="${project.dir}/pom.xml"/>
+		<repo:resolve>
+			<properties prefix="test.resolve.path" classpath="compile"/>	
+		</repo:resolve>
+	</target>
+	
+	<target name="testResolveOverrideGlobalPom">
+		<repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+		<repo:resolve>
+			<dependencies>
+				<pom file="${project.dir}/pom.xml"/>
+			</dependencies>
+			<properties prefix="test.resolve.path" classpath="compile"/>	
+		</repo:resolve>
+	</target>
+	
+	<target name="testResolveGlobalPomIntoOtherLocalRepo">
+		<repo:localrepo dir="${project.dir}/target/resolvetest-local-repo"/>
+		<repo:pom file="${project.dir}/pom.xml"/>
+		<repo:resolve>
+			<properties prefix="test.resolve.path" classpath="compile"/>	
+		</repo:resolve>
+	</target>
+	
+	<target name="testResolveCustomFileLayout">
+		<repo:pom file="${project.dir}/pom.xml"/>
+		<repo:resolve>
+			<files dir="${project.dir}/target/resolve-custom-layout/" layout="{groupId}/{artifactId}/{groupIdDirs}/{extension}"/>
+		</repo:resolve>
+	</target>
+
+</project>

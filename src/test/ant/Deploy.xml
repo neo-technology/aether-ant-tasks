@@ -49,12 +49,14 @@
 	</target>
 	
 	<target name="testDeployAttachedArtifact" depends="setUp">
-		<repo:deploy pomref="pom" reporef="distrepo">
+		<repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+		<repo:artifact classifier="ant" file="${project.dir.ant}/common.xml" id="ant"/>
+		<repo:deploy reporef="distrepo">
 			<repo:artifact refid="ant"/>
 		</repo:deploy>
 	</target>
 
-	<target name="testCustomRepo" depends="setUp">
+	<target name="testInlineRepo" depends="setUp">
 		<repo:localrepo dir="${project.dir}/target/local-repo-custom" />
 		<repo:deploy pomref="pom" reporef="distrepo">
 			<repo:artifact refid="ant"/>
