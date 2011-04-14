@@ -5,8 +5,12 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
+import org.hamcrest.Matcher;
 import org.sonatype.aether.test.util.TestFileUtils;
 
 public class ResolveTest
@@ -61,4 +65,41 @@ public class ResolveTest
 
         TestFileUtils.delete( dir );
     }
+
+    public void testResolveAttachments()
+        throws IOException
+    {
+        File dir = new File( "target/resolve-attachments" );
+        TestFileUtils.delete( dir );
+        executeTarget( "testResolveAttachments" );
+        
+        File jdocDir = new File(dir, "javadoc");
+        
+        assertThat( "aether-api-javadoc was not saved with custom file layout",
+                    new File( jdocDir, "org.sonatype.aether-aether-api-javadoc.jar" ).exists() );
+
+        assertThat( "found non-javadoc files", Arrays.asList( jdocDir.list() ), everyItem( endsWith( "javadoc.jar" ) ) );
+
+        File sourcesDir = new File( dir, "sources" );
+        assertThat( "aether-api-sources was not saved with custom file layout",
+                    new File( sourcesDir, "org.sonatype.aether-aether-api-sources.jar" ).exists() );
+        assertThat( "found non-sources files", Arrays.asList( sourcesDir.list() ),
+                    everyItem( endsWith( "sources.jar" ) ) );
+
+
+        TestFileUtils.delete( dir );
+    }
+
+    public void testResolvePath()
+    {
+        executeTarget( "testResolvePath" );
+        Map refs = getProject().getCopyOfReferences();
+        Object obj = refs.get( "out" );
+        assertThat( "ref 'out' is no path", obj, instanceOf( Path.class ) );
+        Path path = (Path) obj;
+        String[] elements = path.list();
+        assertThat( "no aether-api on classpath", elements,
+                    hasItemInArray( allOf( containsString( "aether-api" ), endsWith( ".jar" ) ) ) );
+    }
+
 }

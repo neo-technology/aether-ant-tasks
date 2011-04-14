@@ -78,7 +78,7 @@ public class DeployTest
         File dir = new File(distRepoPath, "test/test/0.1-SNAPSHOT/" );
         String[] files = dir.list();
         assertThat( "attached artifact not found: " + Arrays.toString( files ), files,
-                    new ArrayContainsAtLeastOnce( endsWith( "-ant.xml" ) ) );
+                    hasItemInArray( endsWith( "-ant.xml" ) ) );
     }
 
     private void assertUpdatedFile( long tstamp, File repoPath, String path )
