@@ -15,6 +15,8 @@ package org.sonatype.aether.ant;
 import java.io.File;
 
 import org.apache.tools.ant.BuildFileTest;
+import org.sonatype.aether.test.impl.TestFileProcessor;
+import org.sonatype.aether.test.util.TestFileUtils;
 
 public abstract class AntBuildsTest
     extends BuildFileTest
@@ -32,11 +34,14 @@ public abstract class AntBuildsTest
         System.setProperty( "project.dir.ant", antDir.getAbsolutePath() );
     }
 
+    protected TestFileProcessor fp;
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
+        this.fp = new TestFileProcessor();
     }
 
 }
