@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
-import org.hamcrest.Matcher;
 import org.sonatype.aether.test.util.TestFileUtils;
 
 public class ResolveTest

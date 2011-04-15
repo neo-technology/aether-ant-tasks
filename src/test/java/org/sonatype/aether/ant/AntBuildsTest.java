@@ -23,7 +23,6 @@ import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.apache.tools.ant.BuildFileTest;
-import org.apache.tools.ant.Project;
 import org.sonatype.aether.test.impl.TestFileProcessor;
 
 public abstract class AntBuildsTest
