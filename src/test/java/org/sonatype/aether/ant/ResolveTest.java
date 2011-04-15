@@ -31,7 +31,8 @@ public class ResolveTest
 
         String prop = getProject().getProperty( "test.resolve.path.org.sonatype.aether:aether-api:jar" );
         assertThat( "aether-api was not resolved as a property", prop, notNullValue() );
-        assertThat( "aether-api was not resolved to default local repository", prop, containsString( ".m2/repository" ) );
+        assertThat( "aether-api was not resolved to default local repository", prop,
+                    allOf( containsString( "aether-api" ), endsWith( ".jar" ) ) );
     }
 
     public void testResolveOverrideGlobalPom()
@@ -40,7 +41,8 @@ public class ResolveTest
 
         String prop = getProject().getProperty( "test.resolve.path.org.sonatype.aether:aether-api:jar" );
         assertThat( "aether-api was not resolved as a property", prop, notNullValue() );
-        assertThat( "aether-api was not resolved to default local repository", prop, containsString( ".m2/repository" ) );
+        assertThat( "aether-api was not resolved to default local repository", prop,
+                    allOf( containsString( "aether-api" ), endsWith( ".jar" ) ) );
     }
 
     public void testResolveGlobalPomIntoOtherLocalRepo()

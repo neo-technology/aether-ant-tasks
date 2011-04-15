@@ -19,7 +19,7 @@ public class InstallTest
         throws Exception
     {
         super.setUp();
-        defaultRepoPath = new File( System.getProperty( "user.home" ), ".m2/repository/" );
+        defaultRepoPath = defaultLocalRepository;
         TestFileUtils.delete( new File( defaultRepoPath, "test" ) );
 
         configureProject( "src/test/ant/Install.xml" );

@@ -184,7 +184,6 @@ public class Resolve
 
         RepositorySystemSession session = sys.getSession( this, localRepository );
         RepositorySystem system = sys.getSystem();
-
         log( "Using local repository " + session.getLocalRepository(), Project.MSG_VERBOSE );
 
         List<org.sonatype.aether.repository.RemoteRepository> repos = sys.toRepos( remoteRepositories, session );

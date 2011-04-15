@@ -14,13 +14,26 @@ package org.sonatype.aether.ant;
 
 import java.io.File;
 
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
+import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
+import org.apache.maven.settings.building.SettingsBuilder;
+import org.apache.maven.settings.building.SettingsBuildingException;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.Project;
 import org.sonatype.aether.test.impl.TestFileProcessor;
-import org.sonatype.aether.test.util.TestFileUtils;
 
 public abstract class AntBuildsTest
     extends BuildFileTest
 {
+    private static final SettingsBuilder settingsBuilder = new DefaultSettingsBuilderFactory().newInstance();
+
+    private static final SettingsDecrypter settingsDecrypter = new AntSettingsDecryptorFactory().newInstance();
+
+    private static final String SETTINGS_XML = "settings.xml";
 
     protected static File projectDir;
 
@@ -36,12 +49,50 @@ public abstract class AntBuildsTest
 
     protected TestFileProcessor fp;
 
+    protected File defaultLocalRepository;
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
         this.fp = new TestFileProcessor();
+
+        Settings settings = getSettings();
+        if ( settings.getLocalRepository() != null )
+        {
+            defaultLocalRepository = new File( settings.getLocalRepository() );
+        }
+        else
+        {
+            defaultLocalRepository = new File( System.getProperty( "user.home" ), ".m2/repository" );
+        }
     }
 
+    protected synchronized Settings getSettings()
+        throws SettingsBuildingException
+    {
+        DefaultSettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
+        request.setUserSettingsFile( getUserSettings() );
+
+        Settings settings = settingsBuilder.build( request ).getEffectiveSettings();
+        SettingsDecryptionResult result = settingsDecrypter.decrypt( new DefaultSettingsDecryptionRequest( settings ) );
+        settings.setServers( result.getServers() );
+        settings.setProxies( result.getProxies() );
+        return settings;
+    }
+
+    protected File getUserSettings()
+    {
+        File userHome = new File( System.getProperty( "user.home" ) );
+        File file = new File( new File( userHome, ".ant" ), SETTINGS_XML );
+        if ( file.isFile() )
+        {
+            return file;
+        }
+        else
+        {
+            return new File( new File( userHome, ".m2" ), SETTINGS_XML );
+        }
+    }
 }
