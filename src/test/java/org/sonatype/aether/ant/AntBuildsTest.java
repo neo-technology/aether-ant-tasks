@@ -61,8 +61,14 @@ public abstract class AntBuildsTest
         super.setUp();
         this.fp = new TestFileProcessor();
 
+
         Settings settings = getSettings();
-        if ( settings.getLocalRepository() != null )
+        String mavenRepoProperty = System.getProperty( "maven.repo.local" );
+        if ( mavenRepoProperty != null )
+        {
+            defaultLocalRepository = new File( mavenRepoProperty );
+        }
+        else if ( settings.getLocalRepository() != null )
         {
             defaultLocalRepository = new File( settings.getLocalRepository() );
         }

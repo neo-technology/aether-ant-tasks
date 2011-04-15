@@ -255,11 +255,18 @@ public class AntRepoSys
 
     private File getDefaultLocalRepoDir()
     {
+        String mavenRepoProperty = project.getProperty( "maven.repo.local" );
+        if ( mavenRepoProperty != null )
+        {
+            return new File( mavenRepoProperty );
+        }
+
         Settings settings = getSettings();
         if ( settings.getLocalRepository() != null )
         {
             return new File( settings.getLocalRepository() );
         }
+
         return new File( new File( project.getProperty( "user.home" ), ".m2" ), "repository" );
     }
 
