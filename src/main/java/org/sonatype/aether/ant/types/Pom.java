@@ -278,6 +278,11 @@ public class Pom
 
         Model model = getModel( this );
 
+        if ( model == null )
+        {
+            return;
+        }
+
         ModelValueExtractor extractor = new ModelValueExtractor( id, model, getProject() );
 
         PropertyHelper propHelper = PropertyHelper.getPropertyHelper( getProject() );
