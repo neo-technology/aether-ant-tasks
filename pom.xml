@@ -16,13 +16,19 @@ See the Apache License Version 2.0 for the specific language governing permissio
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.sonatype.forge</groupId>
+    <artifactId>forge-parent</artifactId>
+    <version>6</version>
+  </parent>
+
   <groupId>org.sonatype.aether</groupId>
   <artifactId>aether-ant-tasks</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>Aether :: Ant Tasks</name>
   <description>
-    Ant tasks handling maven artifacts using Aether
+    Ant tasks handling Maven artifacts using Aether.
   </description>
   <url>http://aether.sonatype.org/</url>
   <inceptionYear>2010</inceptionYear>
@@ -90,7 +96,7 @@ See the Apache License Version 2.0 for the specific language governing permissio
 
     <!-- VERSION PROPERTIES -->
     <mavenVersion>3.0.3</mavenVersion>
-    <aetherVersion>1.12-SNAPSHOT</aetherVersion>
+    <aetherVersion>1.11</aetherVersion>
   </properties>
 
   <dependencyManagement>
@@ -146,10 +152,10 @@ See the Apache License Version 2.0 for the specific language governing permissio
       <artifactId>aether-connector-wagon</artifactId>
       <version>${aetherVersion}</version>
       <exclusions>
-      	<exclusion>
-      		<artifactId>junit</artifactId>
-      		<groupId>junit</groupId>
-      	</exclusion>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -194,22 +200,22 @@ See the Apache License Version 2.0 for the specific language governing permissio
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.apache.ant</groupId>
-    	<artifactId>ant-testutil</artifactId>
-    	<version>1.8.2</version>
-    	<scope>test</scope>
-    	<exclusions>
-    		<exclusion>
-    			<artifactId>junit</artifactId>
-    			<groupId>junit</groupId>
-    		</exclusion>
-    	</exclusions>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-testutil</artifactId>
+      <version>1.8.2</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-    	<groupId>org.apache.ant</groupId>
-    	<artifactId>ant-launcher</artifactId>
-    	<version>1.8.2</version>
-    	<scope>test</scope>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-launcher</artifactId>
+      <version>1.8.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -218,16 +224,16 @@ See the Apache License Version 2.0 for the specific language governing permissio
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.hamcrest</groupId>
-    	<artifactId>hamcrest-core</artifactId>
-    	<version>1.3.RC2</version>
-    	<scope>test</scope>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>1.3.RC2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.sonatype.aether</groupId>
-    	<artifactId>aether-test-util</artifactId>
-    	<version>1.12-SNAPSHOT</version>
-    	<scope>test</scope>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-test-util</artifactId>
+      <version>${aetherVersion}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
