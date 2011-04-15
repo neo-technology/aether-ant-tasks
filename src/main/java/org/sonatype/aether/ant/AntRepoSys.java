@@ -258,7 +258,7 @@ public class AntRepoSys
         String mavenRepoProperty = project.getProperty( "maven.repo.local" );
         if ( mavenRepoProperty != null )
         {
-            return new File( mavenRepoProperty );
+            return project.resolveFile( mavenRepoProperty );
         }
 
         Settings settings = getSettings();
