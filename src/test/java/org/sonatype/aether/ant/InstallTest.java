@@ -59,7 +59,6 @@ public class InstallTest
         executeTarget( "testInstallOverrideGlobalPomByRef" );
 
         assertLogContaining( "Installing" );
-        File defaultRepoPath = new File( System.getProperty( "user.home" ), ".m2/repository/" );
 
         assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
         assertUpdatedFile( tstamp, defaultRepoPath, "test/other/0.1-SNAPSHOT/other-0.1-SNAPSHOT.pom" );
@@ -71,7 +70,6 @@ public class InstallTest
         long tstamp = System.currentTimeMillis();
 
         assertLogContaining( "Installing" );
-        File defaultRepoPath = new File( System.getProperty( "user.home" ), ".m2/repository/" );
 
         assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
         assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-ant.xml" );
