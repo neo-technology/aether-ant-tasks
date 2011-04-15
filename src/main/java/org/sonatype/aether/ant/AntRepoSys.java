@@ -50,7 +50,6 @@ import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Reference;
 import org.sonatype.aether.ConfigurationProperties;
@@ -612,17 +611,7 @@ public class AntRepoSys
         {
             return mavenHome;
         }
-        List<?> env = Execute.getProcEnvironment();
-        for ( Object obj : env )
-        {
-            String var = obj.toString();
-            if ( var.startsWith( "M2_HOME=" ) )
-            {
-                mavenHome = var.substring( "M2_HOME=".length() );
-                return mavenHome;
-            }
-        }
-        return null;
+        return System.getenv( "M2_HOME" );
     }
 
     public void addProxy( Proxy proxy )
