@@ -1,8 +1,8 @@
-= Aether Ant Tasks
+# Aether Ant Tasks
 
 The Aether Ant tasks use the Aether library to resolve dependencies and install and deploy locally built artifacts.
 
-== Settings
+## Settings
 
 The Ant tasks are tightly integrated with the usual maven settings.xml. By
 default, the usual $HOME/.m2/settings.xml is used for user settings. 
@@ -19,7 +19,7 @@ The <settings/> definition is used to change that:
 
 Some settings defined in the settings file or in the POM can also be changed inside the ant file.
 
-=== Proxy Settings
+### Proxy Settings
 
 Proxy definitions are used throughout the whole session. There may be multiple
 proxies set. The proxy to use will be chosen by evaluating the nonProxyHosts on
@@ -27,7 +27,7 @@ each proxy definition.
 
     <proxy host="" port="" type="http" nonProxyHosts="foo,bar" />
 
-=== Authentication
+### Authentication
 
 Authentication elements are used with the deploy and resolve tasks to access
 the remote repositories. Every authentication definition will be added globally
@@ -37,13 +37,13 @@ authentication has to be referenced explicitely to be used.
     <authentication username="login" password="pw" id="auth"/>
     <authentication privateKeyFile="file.pk" passphrase="phrase" servers="distrepo" id="distauth"/>
 
-=== Local Repository
+### Local Repository
 
 Only one local repository can be used at a time.
 
     <localrepo dir="someDir"/>
 
-=== Remote Repositories
+### Remote Repositories
 
 Remote repositories may be defined directly:
 
@@ -66,15 +66,15 @@ remote repository:
         <remoterepo refid="distrepo"/>
     </remoterepos>
 
-=== Mirrors
+### Mirrors
 
     <mirror id="" url="" mirrorOf=""/>
 
-== Project
+## Project
 
 Project settings deal with locally availabe information about the build.
 
-=== POM
+### POM
 
 The POM is the data type used to determine the target for the install and
 deploy tasks. If you define a POM without an id based on a full pom.xml file,
@@ -84,14 +84,14 @@ that POM will be used by default for install and deploy.
     <pom groupId="g" artifactId="a" version="v"/>
     <pom coords="g:a:v"/>
 
-==== Properties
+#### Properties
 
 If a POM is set via a file parameter and without any id, the properties
 interpolated from that POM are available for the ant build, e.g.
 ${pom.version}. User properties defined in that pom are mapped with
 "pom.properties." as prefix.
 
-=== Attached Artifacts
+### Attached Artifacts
 
 <artifact> elements define the artifacts produced by this build that should be installed or deployed.
 
@@ -102,7 +102,7 @@ ${pom.version}. User properties defined in that pom are mapped with
 	<artifact file="file-src.jar" />
     </artifacts>
 
-=== Dependencies
+### Dependencies
 
 Dependencies are used to to create classpaths or filesets. They are used by
 the <resolve>-task, which collects the artifacts belonging to the dependencies
@@ -120,17 +120,17 @@ transitively.
     	<dependency refid="second"/>
     </dependencies>
 
-== Tasks
+## Tasks
 
 
 
-=== Install
+### Install
 
 You need to set a POM that references a file for the install task to work.
 
     <install artifactsref="producedArtifacts"/>
 
-=== Deploy
+### Deploy
 
 You need to set a POM that references a file for the deploy task to work, as that POM file will be deployed to repository.
 
@@ -139,7 +139,7 @@ You need to set a POM that references a file for the deploy task to work, as tha
 	<snapshotrepo refid="snaprepo">
     </deploy>
 
-=== Resolve
+### Resolve
 
 The <resolve>-task is used to resolve and collect dependencies from remote
 servers. If no repositories are set explicitely for the task, the repositories
