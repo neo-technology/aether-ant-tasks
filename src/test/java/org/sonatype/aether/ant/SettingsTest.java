@@ -3,6 +3,7 @@ package org.sonatype.aether.ant;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.File;
 import java.io.IOException;
 
 public class SettingsTest
@@ -45,7 +46,7 @@ public class SettingsTest
     {
         executeTarget("setUp");
         assertThat( "no fallback to local settings",
-                    AntRepoSys.getInstance( getProject() ).getUserSettings().getAbsolutePath(),
-                    endsWith( ".m2/settings.xml" ) );
+                    AntRepoSys.getInstance( getProject() ).getUserSettings().getAbsolutePath(), endsWith( ".m2"
+                        + File.separator + "settings.xml" ) );
     }
 }
