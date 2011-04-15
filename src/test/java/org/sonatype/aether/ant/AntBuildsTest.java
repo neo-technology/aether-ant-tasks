@@ -13,6 +13,7 @@ package org.sonatype.aether.ant;
  *******************************************************************************/
 
 import java.io.File;
+import java.io.PrintStream;
 
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
@@ -22,7 +23,10 @@ import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileTest;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
 import org.sonatype.aether.test.impl.TestFileProcessor;
 
 public abstract class AntBuildsTest
@@ -66,6 +70,26 @@ public abstract class AntBuildsTest
         {
             defaultLocalRepository = new File( System.getProperty( "user.home" ), ".m2/repository" );
         }
+    }
+
+    @Override
+    public void configureProject( String filename, int logLevel )
+        throws BuildException
+    {
+        super.configureProject( filename, logLevel );
+        DefaultLogger logger = new DefaultLogger()
+        {
+            @Override
+            protected void printMessage( String message, PrintStream stream, int priority )
+            {
+                message = System.currentTimeMillis() + " " + message;
+                super.printMessage( message, stream, priority );
+            }
+        };
+        logger.setMessageOutputLevel( Project.MSG_INFO );
+        logger.setOutputPrintStream( System.out );
+        logger.setErrorPrintStream( System.err );
+        getProject().addBuildListener( logger );
     }
 
     protected synchronized Settings getSettings()
