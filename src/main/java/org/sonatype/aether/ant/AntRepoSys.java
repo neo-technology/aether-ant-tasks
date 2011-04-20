@@ -138,6 +138,8 @@ public class AntRepoSys
 
     private Pom defaultPom;
 
+    private File mavenRepoDirFromProperty;
+
     private static <T> boolean eq( T o1, T o2 )
     {
         return ( o1 == null ) ? o2 == null : o1.equals( o2 );
@@ -188,6 +190,22 @@ public class AntRepoSys
         repos.setProject( project );
         repos.addRemoterepo( repo );
         project.addReference( ID_DEFAULT_REPOS, repos );
+
+        // resolve maven.repo.local only once relative to project, as the basedir may change for <ant> tasks
+        String localRepoResolved = project.getProperty( "maven.repo.local.resolved" );
+        if ( localRepoResolved != null )
+        {
+            mavenRepoDirFromProperty = new File( localRepoResolved );
+        }
+        else
+        {
+            String mavenRepoProperty = project.getProperty( "maven.repo.local" );
+            if ( mavenRepoProperty != null )
+            {
+                mavenRepoDirFromProperty = project.resolveFile( mavenRepoProperty );
+                project.setProperty( "maven.repo.local.resolved", mavenRepoDirFromProperty.getAbsolutePath() );
+            }
+        }
     }
 
     public synchronized RepositorySystem getSystem()
@@ -255,10 +273,9 @@ public class AntRepoSys
 
     private File getDefaultLocalRepoDir()
     {
-        String mavenRepoProperty = project.getProperty( "maven.repo.local" );
-        if ( mavenRepoProperty != null )
+        if ( mavenRepoDirFromProperty != null )
         {
-            return project.resolveFile( mavenRepoProperty );
+            return mavenRepoDirFromProperty;
         }
 
         Settings settings = getSettings();
