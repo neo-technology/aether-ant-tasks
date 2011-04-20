@@ -12,15 +12,12 @@ public class InstallTest
     extends AntBuildsTest
 {
 
-    private File defaultRepoPath;
-
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        defaultRepoPath = defaultLocalRepository;
-        TestFileUtils.delete( new File( defaultRepoPath, "test" ) );
+        TestFileUtils.delete( new File( defaultLocalRepository, "test" ) );
 
         configureProject( "src/test/ant/Install.xml" );
     }
@@ -30,7 +27,7 @@ public class InstallTest
         throws Exception
     {
         super.tearDown();
-        TestFileUtils.delete( new File( defaultRepoPath, "test" ) );
+        TestFileUtils.delete( new File( defaultLocalRepository, "test" ) );
     }
 
     public void testInstallGlobalPom()
@@ -40,7 +37,7 @@ public class InstallTest
 
         assertLogContaining( "Installing" );
         
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
     }
 
     public void testInstallOverrideGlobalPom()
@@ -50,7 +47,7 @@ public class InstallTest
 
         assertLogContaining( "Installing" );
 
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/other/0.1-SNAPSHOT/other-0.1-SNAPSHOT.pom" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/other/0.1-SNAPSHOT/other-0.1-SNAPSHOT.pom" );
     }
 
     public void testInstallOverrideGlobalPomByRef()
@@ -60,8 +57,8 @@ public class InstallTest
 
         assertLogContaining( "Installing" );
 
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/other/0.1-SNAPSHOT/other-0.1-SNAPSHOT.pom" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/other/0.1-SNAPSHOT/other-0.1-SNAPSHOT.pom" );
     }
 
     public void testDefaultRepo()
@@ -71,8 +68,8 @@ public class InstallTest
 
         assertLogContaining( "Installing" );
 
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
-        assertUpdatedFile( tstamp, defaultRepoPath, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-ant.xml" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT.pom" );
+        assertUpdatedFile( tstamp, defaultLocalRepository, "test/test/0.1-SNAPSHOT/test-0.1-SNAPSHOT-ant.xml" );
     }
 
     public void testCustomRepo()

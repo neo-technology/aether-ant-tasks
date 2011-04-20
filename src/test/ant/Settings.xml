@@ -19,22 +19,22 @@
 
 <project xmlns:repo="antlib:org.sonatype.aether.ant">
 
-	&common;
-	
-	<target name="setUp">
-		<!-- touch file="${project.dir.ant}/common.xml"/-->
-	</target>
-	
-	<target name="testUserSettings" depends="setUp">
-		<repo:settings file="userSettings.xml"/>
-	</target>
-	
-	<target name="testGlobalSettings" depends="setUp">
-		<repo:settings globalfile="globalSettings.xml"/>
-	</target>
-	
-	<target name="testBothSettings" depends="setUp">
-		<repo:settings file="userSettings.xml" globalfile="globalSettings.xml"/>
-	</target>
+  &common;
+
+  <target name="setUp">
+    <!-- touch file="${project.dir.ant}/common.xml"/-->
+  </target>
+
+  <target name="testUserSettings" depends="setUp">
+    <repo:settings file="userSettings.xml"/>
+  </target>
+
+  <target name="testGlobalSettings" depends="setUp">
+    <repo:settings globalfile="globalSettings.xml"/>
+  </target>
+
+  <target name="testBothSettings" depends="setUp">
+    <repo:settings file="userSettings.xml" globalfile="globalSettings.xml"/>
+  </target>
 
 </project>

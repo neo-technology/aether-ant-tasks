@@ -19,48 +19,48 @@
 
 <project xmlns:repo="antlib:org.sonatype.aether.ant">
 
-	&common;
-	
-	<repo:pom file="${project.dir.ant}/dummy-pom.xml" id="pom"/>
-	<repo:artifact classifier="ant" file="${project.dir.ant}/common.xml" id="ant"/>
-	
-	<target name="setUp">
-		<touch file="${project.dir.ant}/dummy-pom.xml"/>
-		<touch file="${project.dir.ant}/other-pom.xml"/>
-		<touch file="${project.dir.ant}/common.xml"/>
-	</target>
-	
-	<target name="testInstallGlobalPom" depends="setUp">
-		<repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
-		<repo:install/>
-	</target>
-	
-	<target name="testInstallOverrideGlobalPom" depends="setUp">
-		<repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
-		<repo:install>
-			<pom file="${project.dir.ant}/other-pom.xml"/>
-		</repo:install>
-	</target>
-	
-	<target name="testInstallOverrideGlobalPomByRef" depends="setUp">
-		<repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
-		<repo:pom file="${project.dir.ant}/other-pom.xml" id="other"/>
-		<repo:install/>
-		<repo:install pomref="other"/>
-	</target>
-	
-	<target name="testDefaultRepo" depends="setUp">
-		<repo:install pomref="pom">
-			<repo:artifact refid="ant"/>
-		</repo:install>
-	</target>
+  &common;
 
-	<target name="testCustomRepo" depends="setUp">
-		<repo:localrepo dir="${project.dir}/target/local-repo-custom" />
-		<repo:install pomref="pom">
-			<repo:artifact refid="ant"/>
-		</repo:install>
-	</target>
+  <repo:pom file="${project.dir.ant}/dummy-pom.xml" id="pom"/>
+  <repo:artifact classifier="ant" file="${project.dir.ant}/common.xml" id="ant"/>
+
+  <target name="setUp">
+    <touch file="${project.dir.ant}/dummy-pom.xml"/>
+    <touch file="${project.dir.ant}/other-pom.xml"/>
+    <touch file="${project.dir.ant}/common.xml"/>
+  </target>
+
+  <target name="testInstallGlobalPom" depends="setUp">
+    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+    <repo:install/>
+  </target>
+
+  <target name="testInstallOverrideGlobalPom" depends="setUp">
+    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+    <repo:install>
+      <pom file="${project.dir.ant}/other-pom.xml"/>
+    </repo:install>
+  </target>
+
+  <target name="testInstallOverrideGlobalPomByRef" depends="setUp">
+    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+    <repo:pom file="${project.dir.ant}/other-pom.xml" id="other"/>
+    <repo:install/>
+    <repo:install pomref="other"/>
+  </target>
+
+  <target name="testDefaultRepo" depends="setUp">
+    <repo:install pomref="pom">
+      <repo:artifact refid="ant"/>
+    </repo:install>
+  </target>
+
+  <target name="testCustomRepo" depends="setUp">
+    <repo:localrepo dir="${project.dir}/target/local-repo-custom" />
+    <repo:install pomref="pom">
+      <repo:artifact refid="ant"/>
+    </repo:install>
+  </target>
 
 
 </project>
