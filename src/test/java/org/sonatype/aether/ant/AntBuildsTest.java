@@ -26,7 +26,6 @@ import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Project;
 import org.sonatype.aether.test.impl.TestFileProcessor;
 
 public abstract class AntBuildsTest
@@ -92,7 +91,7 @@ public abstract class AntBuildsTest
                 super.printMessage( message, stream, priority );
             }
         };
-        logger.setMessageOutputLevel( Project.MSG_INFO );
+        logger.setMessageOutputLevel( logLevel );
         logger.setOutputPrintStream( System.out );
         logger.setErrorPrintStream( System.err );
         getProject().addBuildListener( logger );
