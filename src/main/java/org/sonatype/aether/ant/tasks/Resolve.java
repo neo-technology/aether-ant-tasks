@@ -23,11 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.model.Model;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectComponent;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.util.FileUtils;
@@ -35,15 +33,8 @@ import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.ant.AntRepoSys;
 import org.sonatype.aether.ant.types.Dependencies;
-import org.sonatype.aether.ant.types.Dependency;
-import org.sonatype.aether.ant.types.Exclusion;
-import org.sonatype.aether.ant.types.LocalRepository;
 import org.sonatype.aether.ant.types.Pom;
-import org.sonatype.aether.ant.types.RemoteRepositories;
-import org.sonatype.aether.ant.types.RemoteRepository;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.DependencyFilter;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.resolution.ArtifactRequest;
@@ -56,51 +47,16 @@ import org.sonatype.aether.util.filter.ScopeDependencyFilter;
  * @author Benjamin Bentmann
  */
 public class Resolve
-    extends Task
+    extends AbstractResolvingTask
 {
-
-    private Dependencies dependencies;
 
     private List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
 
-    private RemoteRepositories remoteRepositories;
-
-    private LocalRepository localRepository;
-
     private boolean failOnMissingAttachments;
-
-    public void addDependencies( Dependencies dependencies )
-    {
-        if ( this.dependencies != null )
-        {
-            throw new BuildException( "You must not specify multiple <dependencies> elements" );
-        }
-        this.dependencies = dependencies;
-    }
-
-    public void setDependenciesRef( Reference ref )
-    {
-        if ( dependencies == null )
-        {
-            dependencies = new Dependencies();
-            dependencies.setProject( getProject() );
-        }
-        dependencies.setRefid( ref );
-    }
 
     public void setFailOnMissingAttachments( boolean failOnMissingAttachments )
     {
         this.failOnMissingAttachments = failOnMissingAttachments;
-    }
-
-    public LocalRepository createLocalRepo()
-    {
-        if ( localRepository != null )
-        {
-            throw new BuildException( "You must not specify multiple <localRepo> elements" );
-        }
-        localRepository = new LocalRepository( this );
-        return localRepository;
     }
 
     public Path createPath()
@@ -122,34 +78,6 @@ public class Resolve
         Props props = new Props();
         consumers.add( props );
         return props;
-    }
-
-    private RemoteRepositories getRemoteRepos()
-    {
-        if ( remoteRepositories == null )
-        {
-            remoteRepositories = new RemoteRepositories();
-            remoteRepositories.setProject( getProject() );
-        }
-        return remoteRepositories;
-    }
-
-    public void addRemoteRepo( RemoteRepository repository )
-    {
-        getRemoteRepos().addRemoterepo( repository );
-    }
-
-    public void addRemoteRepos( RemoteRepositories repositories )
-    {
-        getRemoteRepos().addRemoterepos( repositories );
-    }
-
-    public void setRemoteReposRef( Reference ref )
-    {
-        RemoteRepositories repos = new RemoteRepositories();
-        repos.setProject( getProject() );
-        repos.setRefid( ref );
-        getRemoteRepos().addRemoterepos( repos );
     }
 
     private void validate()
@@ -186,51 +114,8 @@ public class Resolve
         RepositorySystem system = sys.getSystem();
         log( "Using local repository " + session.getLocalRepository(), Project.MSG_VERBOSE );
 
-        List<org.sonatype.aether.repository.RemoteRepository> repos = sys.toRepos( remoteRepositories, session );
 
-        CollectRequest collectRequest = new CollectRequest();
-        collectRequest.setRequestContext( "project" );
-
-        for ( org.sonatype.aether.repository.RemoteRepository repo : repos )
-        {
-            log( "Using remote repository " + repo, Project.MSG_VERBOSE );
-            collectRequest.addRepository( repo );
-        }
-
-        List<Exclusion> globalExclusions = dependencies.getExclusions();
-        for ( Dependency dep : dependencies.getDependencies() )
-        {
-            collectRequest.addDependency( sys.toDependency( dep, globalExclusions, session ) );
-        }
-
-        if ( dependencies.getPom() != null )
-        {
-            Model model = dependencies.getPom().getModel( this );
-            for ( org.apache.maven.model.Dependency dep : model.getDependencies() )
-            {
-                Dependency dependency = new Dependency();
-                dependency.setArtifactId( dep.getArtifactId() );
-                dependency.setClassifier( dep.getClassifier() );
-                dependency.setGroupId( dep.getGroupId() );
-                dependency.setScope( dep.getScope() );
-                dependency.setVersion( dep.getVersion() );
-                collectRequest.addDependency( sys.toDependency( dependency, globalExclusions, session ) );
-            }
-        }
-
-        log( "Collecting dependencies", Project.MSG_VERBOSE );
-
-        DependencyNode root;
-        try
-        {
-            root = system.collectDependencies( session, collectRequest ).getRoot();
-        }
-        catch ( DependencyCollectionException e )
-        {
-            throw new BuildException( "Could not collect dependencies: " + e.getMessage(), e );
-        }
-
-        root.accept( new DependencyGraphLogger( this ) );
+        DependencyNode root = collectDependencies().getRoot();
 
         Map<String, Group> groups = new HashMap<String, Group>();
         for ( ArtifactConsumer consumer : consumers )
