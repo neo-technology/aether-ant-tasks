@@ -103,7 +103,7 @@ public class Artifact
         {
             return getRef().getType();
         }
-        return ( type != null ) ? type : "";
+        return ( type != null ) ? type : "jar";
     }
 
     public void setType( String type )
