@@ -56,6 +56,7 @@ import org.sonatype.aether.ConfigurationProperties;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.ant.types.Authentication;
+import org.sonatype.aether.ant.types.Dependencies;
 import org.sonatype.aether.ant.types.Dependency;
 import org.sonatype.aether.ant.types.Exclusion;
 import org.sonatype.aether.ant.types.LocalRepository;
@@ -67,6 +68,9 @@ import org.sonatype.aether.ant.types.RemoteRepository;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.artifact.ArtifactType;
 import org.sonatype.aether.artifact.ArtifactTypeRegistry;
+import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.CollectResult;
+import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.impl.ArtifactDescriptorReader;
@@ -355,8 +359,7 @@ public class AntRepoSys
                 auth = new org.sonatype.aether.repository.Authentication( proxy.getUsername(), proxy.getPassword() );
             }
             selector.add( new org.sonatype.aether.repository.Proxy( proxy.getProtocol(), proxy.getHost(),
-                                                                    proxy.getPort(), auth ),
-                          proxy.getNonProxyHosts() );
+                                                                    proxy.getPort(), auth ), proxy.getNonProxyHosts() );
         }
 
         return selector;
@@ -407,7 +410,7 @@ public class AntRepoSys
         {
             org.sonatype.aether.repository.Authentication auth =
                 new org.sonatype.aether.repository.Authentication( server.getUsername(), server.getPassword(),
-                                                        server.getPrivateKey(), server.getPassphrase() );
+                                                                   server.getPrivateKey(), server.getPassphrase() );
             selector.add( server.getId(), auth );
         }
 
@@ -415,15 +418,15 @@ public class AntRepoSys
     }
 
     public org.sonatype.aether.graph.Dependency toDependency( Dependency dependency, List<Exclusion> exclusions,
-                                                        RepositorySystemSession session )
+                                                              RepositorySystemSession session )
     {
         return new org.sonatype.aether.graph.Dependency( toArtifact( dependency, session.getArtifactTypeRegistry() ),
-                                                   dependency.getScope(), false,
-                                                   toExclusions( dependency.getExclusions(), exclusions ) );
+                                                         dependency.getScope(), false,
+                                                         toExclusions( dependency.getExclusions(), exclusions ) );
     }
 
     private Collection<org.sonatype.aether.graph.Exclusion> toExclusions( Collection<Exclusion> exclusions1,
-                                                                    Collection<Exclusion> exclusions2 )
+                                                                          Collection<Exclusion> exclusions2 )
     {
         Collection<org.sonatype.aether.graph.Exclusion> results =
             new LinkedHashSet<org.sonatype.aether.graph.Exclusion>();
@@ -447,7 +450,7 @@ public class AntRepoSys
     private org.sonatype.aether.graph.Exclusion toExclusion( Exclusion exclusion )
     {
         return new org.sonatype.aether.graph.Exclusion( exclusion.getGroupId(), exclusion.getArtifactId(),
-                                                  exclusion.getClassifier(), exclusion.getExtension() );
+                                                        exclusion.getClassifier(), exclusion.getExtension() );
     }
 
     private org.sonatype.aether.artifact.Artifact toArtifact( Dependency dependency, ArtifactTypeRegistry types )
@@ -477,7 +480,7 @@ public class AntRepoSys
             return null;
         }
         return new org.sonatype.aether.repository.Proxy( proxy.getType(), proxy.getHost(), proxy.getPort(),
-                                              toAuth( proxy.getAuthentication() ) );
+                                                         toAuth( proxy.getAuthentication() ) );
     }
 
     private org.sonatype.aether.repository.Authentication toAuth( Authentication auth )
@@ -487,7 +490,7 @@ public class AntRepoSys
             return null;
         }
         return new org.sonatype.aether.repository.Authentication( auth.getUsername(), auth.getPassword(),
-                                                       auth.getPrivateKeyFile(), auth.getPassphrase() );
+                                                                  auth.getPrivateKeyFile(), auth.getPassphrase() );
     }
 
     private RemoteRepositories getRepos( RemoteRepositories repos )
@@ -544,10 +547,11 @@ public class AntRepoSys
         result.setId( repo.getId() );
         result.setContentType( repo.getType() );
         result.setUrl( repo.getUrl() );
-        result.setPolicy( true, toPolicy( repo.getSnapshotPolicy(), repo.isSnapshots(), repo.getUpdates(),
-                                          repo.getChecksums() ) );
-        result.setPolicy( false, toPolicy( repo.getReleasePolicy(), repo.isReleases(), repo.getUpdates(),
-                                           repo.getChecksums() ) );
+        result.setPolicy( true,
+                          toPolicy( repo.getSnapshotPolicy(), repo.isSnapshots(), repo.getUpdates(),
+                                    repo.getChecksums() ) );
+        result.setPolicy( false,
+                          toPolicy( repo.getReleasePolicy(), repo.isReleases(), repo.getUpdates(), repo.getChecksums() ) );
         result.setAuthentication( toAuth( repo.getAuthentication() ) );
         return result;
     }
@@ -755,6 +759,62 @@ public class AntRepoSys
     public Pom getDefaultPom()
     {
         return defaultPom;
+    }
+
+    public CollectResult collectDependencies( Task task, Dependencies dependencies, LocalRepository localRepository,
+                                              RemoteRepositories remoteRepositories )
+    {
+        RepositorySystemSession session = getSession( task, localRepository );
+
+        List<org.sonatype.aether.repository.RemoteRepository> repos = toRepos( remoteRepositories, session );
+
+        CollectRequest collectRequest = new CollectRequest();
+        collectRequest.setRequestContext( "project" );
+
+        for ( org.sonatype.aether.repository.RemoteRepository repo : repos )
+        {
+            task.getProject().log( "Using remote repository " + repo, Project.MSG_VERBOSE );
+            collectRequest.addRepository( repo );
+        }
+
+        if ( dependencies != null )
+        {
+
+            List<Exclusion> globalExclusions = dependencies.getExclusions();
+            for ( Dependency dep : dependencies.getDependencies() )
+            {
+                collectRequest.addDependency( toDependency( dep, globalExclusions, session ) );
+            }
+
+            if ( dependencies.getPom() != null )
+            {
+                Model model = dependencies.getPom().getModel( task );
+                for ( org.apache.maven.model.Dependency dep : model.getDependencies() )
+                {
+                    Dependency dependency = new Dependency();
+                    dependency.setArtifactId( dep.getArtifactId() );
+                    dependency.setClassifier( dep.getClassifier() );
+                    dependency.setGroupId( dep.getGroupId() );
+                    dependency.setScope( dep.getScope() );
+                    dependency.setVersion( dep.getVersion() );
+                    collectRequest.addDependency( toDependency( dependency, globalExclusions, session ) );
+                }
+            }
+        }
+
+        task.getProject().log( "Collecting dependencies", Project.MSG_VERBOSE );
+
+        CollectResult result;
+        try
+        {
+            result = getSystem().collectDependencies( session, collectRequest );
+        }
+        catch ( DependencyCollectionException e )
+        {
+            throw new BuildException( "Could not collect dependencies: " + e.getMessage(), e );
+        }
+
+        return result;
     }
 
 }

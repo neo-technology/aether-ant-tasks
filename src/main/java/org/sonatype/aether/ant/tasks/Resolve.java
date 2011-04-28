@@ -116,6 +116,7 @@ public class Resolve
 
 
         DependencyNode root = collectDependencies().getRoot();
+        root.accept( new DependencyGraphLogger( this ) );
 
         Map<String, Group> groups = new HashMap<String, Group>();
         for ( ArtifactConsumer consumer : consumers )
