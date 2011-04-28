@@ -43,6 +43,8 @@ public class Pom
 
     private String version;
 
+    private String packaging = "jar";
+
     private RemoteRepositories remoteRepositories;
 
     protected Pom getRef()
@@ -217,6 +219,25 @@ public class Pom
     {
         return new BuildException( "You must not specify both 'file' and "
             + "('coords', 'groupId', 'artifactId', 'version')" );
+    }
+
+    public String getPackaging()
+    {
+        if ( isReference() )
+        {
+            return getRef().getPackaging();
+        }
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        checkAttributesAllowed();
+        if ( file != null )
+        {
+            throw ambiguousSource();
+        }
+        this.packaging = packaging;
     }
 
     private RemoteRepositories getRemoteRepos()
