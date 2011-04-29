@@ -262,6 +262,8 @@ public class AntRepoSys
         session.setRepositoryListener( new AntRepositoryListener( task ) );
         session.setTransferListener( new AntTransferListener( task ) );
 
+        session.setWorkspaceReader( ProjectWorkspaceReader.getInstance() );
+
         return session;
     }
 

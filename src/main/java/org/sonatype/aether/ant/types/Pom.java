@@ -22,6 +22,7 @@ import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Reference;
 import org.sonatype.aether.ant.AntRepoSys;
+import org.sonatype.aether.ant.ProjectWorkspaceReader;
 import org.sonatype.aether.ant.tasks.RefTask;
 
 /**
@@ -296,6 +297,8 @@ public class Pom
         {
             AntRepoSys.getInstance( getProject() ).setDefaultPom( this );
         }
+
+        ProjectWorkspaceReader.getInstance().addPom( this );
 
         Model model = getModel( this );
 
