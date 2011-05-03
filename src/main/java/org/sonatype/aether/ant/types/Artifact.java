@@ -18,14 +18,15 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
+import org.sonatype.aether.ant.ProjectWorkspaceReader;
+import org.sonatype.aether.ant.tasks.RefTask;
 
 /**
  * @author Benjamin Bentmann
  */
 public class Artifact
-    extends DataType
+    extends RefTask
     implements ArtifactContainer
 {
 
@@ -34,6 +35,8 @@ public class Artifact
     private String type;
 
     private String classifier;
+
+    private Pom pom;
 
     protected Artifact getRef()
     {
@@ -127,9 +130,37 @@ public class Artifact
         this.classifier = classifier;
     }
 
+    public void setPomRef( Pom pom )
+    {
+        checkAttributesAllowed();
+        this.pom = pom;
+    }
+
+    public void addPom( Pom pom )
+    {
+        checkChildrenAllowed();
+        this.pom = pom;
+    }
+
+    public Pom getPom()
+    {
+        if ( isReference() )
+        {
+            return getRef().getPom();
+        }
+        return pom;
+    }
+
     public List<Artifact> getArtifacts()
     {
         return Collections.singletonList( this );
+    }
+
+    @Override
+    public void execute()
+        throws BuildException
+    {
+        ProjectWorkspaceReader.getInstance().addArtifact( this );
     }
 
 }
