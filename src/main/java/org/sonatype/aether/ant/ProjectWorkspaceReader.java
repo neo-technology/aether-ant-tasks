@@ -110,6 +110,10 @@ public class ProjectWorkspaceReader
         return Collections.emptyList();
     }
 
+    ProjectWorkspaceReader()
+    {
+    }
+
     public static ProjectWorkspaceReader getInstance()
     {
         if ( instance != null )
