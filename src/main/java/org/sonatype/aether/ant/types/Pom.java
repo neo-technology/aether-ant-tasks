@@ -48,6 +48,8 @@ public class Pom
 
     private RemoteRepositories remoteRepositories;
 
+    private String coords;
+
     protected Pom getRef()
     {
         return (Pom) getCheckedRef();
@@ -304,8 +306,11 @@ public class Pom
 
         if ( model == null )
         {
+            coords = getGroupId() + ":" + getArtifactId() + ":" + getVersion();
             return;
         }
+
+        coords = model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion();
 
         ModelValueExtractor extractor = new ModelValueExtractor( id, model, getProject() );
 
@@ -321,6 +326,12 @@ public class Pom
             // Ant 1.6 - 1.7.1 interceptor chaining
             PomPropertyHelper.register( extractor, propHelper );
         }
+
+    }
+
+    public String toString()
+    {
+        return coords;
     }
 
 }

@@ -62,6 +62,8 @@ public abstract class AbstractDistTask
             {
                 duplicates.put( key, artifact.getFile() );
             }
+
+            validateArtifactGav( artifact );
         }
 
         Pom defaultPom = AntRepoSys.getInstance( getProject() ).getDefaultPom();
@@ -75,6 +77,38 @@ public abstract class AbstractDistTask
         if ( pom.getFile() == null )
         {
             throw new BuildException( "You must specify a <pom> element that has the 'file' attribute set" );
+        }
+    }
+
+    private void validateArtifactGav( Artifact artifact )
+    {
+        Pom artifactPom = artifact.getPom();
+        if ( artifactPom != null )
+        {
+            String gid;
+            String aid;
+            String version;
+            if ( artifactPom.getFile() != null )
+            {
+                Model model = artifactPom.getModel( this );
+                gid = model.getGroupId();
+                aid = model.getArtifactId();
+                version = model.getVersion();
+            }
+            else
+            {
+                gid = artifactPom.getGroupId();
+                aid = artifactPom.getArtifactId();
+                version = artifactPom.getVersion();
+            }
+            
+            Model model = getPom().getModel( this );
+            
+            if ( ! ( model.getGroupId().equals( gid ) && model.getArtifactId().equals( aid ) && model.getVersion().equals( version )) )
+            {
+                throw new BuildException( "Artifact references different pom than it would be installed with: "
+                    + artifact.toString() );
+            }
         }
     }
 

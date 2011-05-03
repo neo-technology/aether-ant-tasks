@@ -163,4 +163,10 @@ public class Artifact
         ProjectWorkspaceReader.getInstance().addArtifact( this );
     }
 
+    public String toString()
+    {
+        String pomRepr = getPom() != null ? "(" + getPom().toString() + ":)" : "";
+        return String.format( pomRepr + "%s:%s", getType(), getClassifier() );
+    }
+
 }
