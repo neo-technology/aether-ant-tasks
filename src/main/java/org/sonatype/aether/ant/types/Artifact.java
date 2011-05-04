@@ -130,9 +130,12 @@ public class Artifact
         this.classifier = classifier;
     }
 
-    public void setPomRef( Pom pom )
+    public void setPomRef( Reference ref )
     {
         checkAttributesAllowed();
+        Pom pom = new Pom();
+        pom.setProject( getProject() );
+        pom.setRefid( ref );
         this.pom = pom;
     }
 

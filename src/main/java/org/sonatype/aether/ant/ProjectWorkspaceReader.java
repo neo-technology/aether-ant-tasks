@@ -65,7 +65,9 @@ public class ProjectWorkspaceReader
     {
         if ( pom.getFile() != null )
         {
-            return coords(pom.getModel( pom ));
+            Model model = pom.getModel( pom );
+            return String.format( "%s:%s:%s:%s", model.getArtifactId(), model.getGroupId(), extension,
+                                  model.getVersion() );
         }
         else
         {
@@ -91,16 +93,10 @@ public class ProjectWorkspaceReader
 
     public File findArtifact( Artifact artifact )
     {
-        if ( !artifact.getExtension().equals( "pom" ) || !poms.containsKey( coords( artifact ) ) )
-        {
-            return null;
-        }
-
         WeakReference<File> weakReference = poms.get( coords( artifact ) );
-        File file = weakReference.get();
-        if ( file != null )
+        if ( weakReference != null )
         {
-            return file;
+            return weakReference.get();
         }
         return null;
     }
