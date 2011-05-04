@@ -46,7 +46,7 @@ public class Dependencies
         }
         else
         {
-            if ( getPom().getFile() == null )
+            if ( getPom() != null && getPom().getFile() == null )
             {
                 throw new BuildException( "A <pom> used for dependency resolution has to be backed by a pom.xml-file" );
             }
