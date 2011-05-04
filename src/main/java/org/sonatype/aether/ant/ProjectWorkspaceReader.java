@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.model.Model;
-import org.apache.tools.ant.Project;
 import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.WorkspaceReader;
@@ -41,7 +40,7 @@ public class ProjectWorkspaceReader
 
     private static Object lock = new Object();
 
-    private Map<String, File> poms = Collections.synchronizedMap( new HashMap<String, File>() );
+    private Map<String, File> artifacts = Collections.synchronizedMap( new HashMap<String, File>() );
 
     public void addPom( Pom pom )
     {
@@ -49,7 +48,7 @@ public class ProjectWorkspaceReader
         {
             Model model = pom.getModel( pom );
             String coords = coords( new DefaultArtifact( model.getGroupId(), model.getArtifactId(), null, "pom", model.getVersion() ) );
-            put( pom.getProject(), coords, pom.getFile() );
+            artifacts.put( coords, pom.getFile() );
         }
     }
 
@@ -77,13 +76,8 @@ public class ProjectWorkspaceReader
             }
 
             coords = coords( aetherArtifact );
-            put( artifact.getProject(), coords, artifact.getFile() );
+            artifacts.put( coords, artifact.getFile() );
         }
-    }
-
-    private void put( Project project, String coords, File file )
-    {
-        poms.put( coords, file );
     }
 
     private String coords( Artifact artifact )
@@ -104,7 +98,7 @@ public class ProjectWorkspaceReader
 
     public File findArtifact( Artifact artifact )
     {
-        return poms.get( coords( artifact ) );
+        return artifacts.get( coords( artifact ) );
     }
 
     public List<String> findVersions( Artifact artifact )
