@@ -13,17 +13,18 @@ package org.sonatype.aether.ant;
  *******************************************************************************/
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.model.Model;
+import org.apache.tools.ant.Project;
 import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.repository.WorkspaceReader;
 import org.sonatype.aether.repository.WorkspaceRepository;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
  * Workspace reader caching available POMs and artifacts for ant builds.
@@ -40,15 +41,15 @@ public class ProjectWorkspaceReader
 
     private static Object lock = new Object();
 
-    private Map<String, WeakReference<File>> poms =
-        Collections.synchronizedMap( new HashMap<String, WeakReference<File>>() );
+    private Map<String, File> poms = Collections.synchronizedMap( new HashMap<String, File>() );
 
     public void addPom( Pom pom )
     {
         if ( pom.getFile() != null )
         {
-            String coords = coords( pom.getModel( pom ) );
-            poms.put( coords, new WeakReference<File>( pom.getFile() ) );
+            Model model = pom.getModel( pom );
+            String coords = coords( new DefaultArtifact( model.getGroupId(), model.getArtifactId(), null, "pom", model.getVersion() ) );
+            put( pom.getProject(), coords, pom.getFile() );
         }
     }
 
@@ -56,34 +57,44 @@ public class ProjectWorkspaceReader
     {
         if ( artifact.getPom() != null )
         {
-            String coords = coords( artifact.getPom(), artifact.getType() );
-            poms.put( coords, new WeakReference<File>( artifact.getFile() ) );
+            String coords;
+
+            Pom pom = artifact.getPom();
+            DefaultArtifact aetherArtifact;
+            if ( pom.getFile() != null )
+            {
+                Model model = pom.getModel( pom );
+                aetherArtifact =
+                    new DefaultArtifact( model.getGroupId(), model.getArtifactId(), artifact.getClassifier(),
+                                             artifact.getType(),
+                                             model.getVersion() );
+            }
+            else
+            {
+                aetherArtifact =
+                    new DefaultArtifact( pom.getGroupId(), pom.getArtifactId(), artifact.getClassifier(),
+                                         artifact.getType(), pom.getVersion() );
+            }
+
+            coords = coords( aetherArtifact );
+            put( artifact.getProject(), coords, artifact.getFile() );
         }
     }
 
-    private String coords( org.sonatype.aether.ant.types.Pom pom, String extension )
+    private void put( Project project, String coords, File file )
     {
-        if ( pom.getFile() != null )
-        {
-            Model model = pom.getModel( pom );
-            return String.format( "%s:%s:%s:%s", model.getArtifactId(), model.getGroupId(), extension,
-                                  model.getVersion() );
-        }
-        else
-        {
-            return String.format( "%s:%s:%s:%s", pom.getArtifactId(), pom.getGroupId(), extension, pom.getVersion());
-        }
-    }
-
-    private String coords( Model pom )
-    {
-        return String.format( "%s:%s:pom:%s", pom.getGroupId(), pom.getArtifactId(), pom.getVersion() );
+        poms.put( coords, file );
     }
 
     private String coords( Artifact artifact )
     {
-        return String.format( "%s:%s:%s:%s", artifact.getGroupId(), artifact.getArtifactId(), artifact.getExtension(),
-                              artifact.getBaseVersion() );
+        StringBuilder buffer = new StringBuilder( 128 );
+        buffer.append( artifact.getGroupId() );
+        buffer.append( ':' ).append( artifact.getArtifactId() );
+        buffer.append( ':' ).append( artifact.getExtension() );
+        buffer.append( ':' ).append( artifact.getClassifier() );
+        buffer.append( ':' ).append( artifact.getVersion() );
+        return buffer.toString();
     }
 
     public WorkspaceRepository getRepository()
@@ -93,12 +104,7 @@ public class ProjectWorkspaceReader
 
     public File findArtifact( Artifact artifact )
     {
-        WeakReference<File> weakReference = poms.get( coords( artifact ) );
-        if ( weakReference != null )
-        {
-            return weakReference.get();
-        }
-        return null;
+        return poms.get( coords( artifact ) );
     }
 
     public List<String> findVersions( Artifact artifact )

@@ -73,7 +73,7 @@ public class ProjectWorkspaceReaderTest
 
         org.sonatype.aether.ant.types.Artifact artifact = new org.sonatype.aether.ant.types.Artifact();
         artifact.setProject( project );
-        artifact.setPomRef( pom );
+        artifact.addPom( pom );
         artifact.setFile( new File( "src/test/ant/common.xml" ) );
 
         reader.addArtifact( artifact );
@@ -94,7 +94,7 @@ public class ProjectWorkspaceReaderTest
 
         org.sonatype.aether.ant.types.Artifact artifact = new org.sonatype.aether.ant.types.Artifact();
         artifact.setProject( project );
-        artifact.setPomRef( pom );
+        artifact.addPom( pom );
         artifact.setFile( new File( "src/test/ant/common.xml" ) );
 
         reader.addArtifact( artifact );
