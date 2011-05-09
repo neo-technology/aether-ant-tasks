@@ -331,6 +331,11 @@ public class Pom
 
     public String toString()
     {
+        return coords + " (" + super.toString() + ")";
+    }
+
+    public String getCoords()
+    {
         return coords;
     }
 

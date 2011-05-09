@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.maven.model.Model;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Reference;
 import org.sonatype.aether.RepositorySystemSession;
@@ -67,7 +68,11 @@ public abstract class AbstractDistTask
         }
 
         Pom defaultPom = AntRepoSys.getInstance( getProject() ).getDefaultPom();
-        pom = pom != null ? pom : defaultPom;
+        if ( pom == null && defaultPom != null )
+        {
+            log( "Using default POM (" + defaultPom.getCoords() + ")", Project.MSG_INFO );
+            pom = defaultPom;
+        }
 
         if ( pom == null )
         {
