@@ -29,10 +29,10 @@ each proxy definition.
 
 ### Authentication
 
-Authentication elements are used with the deploy and resolve tasks to access
-the remote repositories. Every authentication definition will be added globally
-and chosen based on the 'servers' attribute. If this attribute is not set, an
-authentication has to be referenced explicitely to be used.
+Authentication elements are used to access remote repositories. Every
+authentication definition will be added globally and chosen based on the
+'servers' attribute. If this attribute is not set, an authentication has to be
+referenced explicitely to be used.
 
     <authentication username="login" password="pw" id="auth"/>
     <authentication privateKeyFile="file.pk" passphrase="phrase" servers="distrepo" id="distauth"/>
