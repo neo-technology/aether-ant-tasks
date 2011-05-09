@@ -90,6 +90,7 @@ public class Resolve
         Pom pom = AntRepoSys.getInstance( getProject() ).getDefaultPom();
         if ( dependencies == null && pom != null )
         {
+            log( "Using default pom for dependency resolution (" + pom.toString() + ")", Project.MSG_INFO );
             dependencies = new Dependencies();
             dependencies.setProject( getProject() );
             getProject().addReference( "resolve.default.pom", pom );
@@ -100,6 +101,10 @@ public class Resolve
         {
             dependencies.validate( this );
         }
+        else
+        {
+            throw new BuildException( "No <dependencies> set for resolution" );
+        }
     }
 
     @Override
@@ -108,12 +113,12 @@ public class Resolve
     {
         validate();
 
+
         AntRepoSys sys = AntRepoSys.getInstance( getProject() );
 
         RepositorySystemSession session = sys.getSession( this, localRepository );
         RepositorySystem system = sys.getSystem();
         log( "Using local repository " + session.getLocalRepository(), Project.MSG_VERBOSE );
-
 
         DependencyNode root = collectDependencies().getRoot();
         root.accept( new DependencyGraphLogger( this ) );
