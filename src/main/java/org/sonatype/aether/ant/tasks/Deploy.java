@@ -18,6 +18,7 @@ import org.apache.tools.ant.types.Reference;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.ant.AntRepoSys;
+import org.sonatype.aether.ant.ConverterUtils;
 import org.sonatype.aether.ant.types.RemoteRepository;
 import org.sonatype.aether.deployment.DeployRequest;
 import org.sonatype.aether.deployment.DeploymentException;
@@ -108,7 +109,7 @@ public class Deploy
 
         boolean snapshot = request.getArtifacts().iterator().next().isSnapshot();
         RemoteRepository distRepo = ( snapshot && snapshotRepository != null ) ? snapshotRepository : repository;
-        request.setRepository( sys.toDistRepo( distRepo, session ) );
+        request.setRepository( ConverterUtils.toDistRepository( distRepo, session ) );
 
         try
         {

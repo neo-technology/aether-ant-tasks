@@ -13,11 +13,8 @@ package org.sonatype.aether.ant;
  *******************************************************************************/
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,9 +62,6 @@ import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.ant.types.Proxy;
 import org.sonatype.aether.ant.types.RemoteRepositories;
 import org.sonatype.aether.ant.types.RemoteRepository;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.artifact.ArtifactType;
-import org.sonatype.aether.artifact.ArtifactTypeRegistry;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
@@ -82,13 +76,10 @@ import org.sonatype.aether.repository.AuthenticationSelector;
 import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.MirrorSelector;
 import org.sonatype.aether.repository.ProxySelector;
-import org.sonatype.aether.repository.RepositoryPolicy;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.spi.log.Logger;
 import org.sonatype.aether.util.DefaultRepositoryCache;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.DefaultArtifactType;
 import org.sonatype.aether.util.repository.ConservativeAuthenticationSelector;
 import org.sonatype.aether.util.repository.DefaultAuthenticationSelector;
 import org.sonatype.aether.util.repository.DefaultMirrorSelector;
@@ -99,16 +90,6 @@ import org.sonatype.aether.util.repository.DefaultProxySelector;
  */
 public class AntRepoSys
 {
-
-    private static final String ID = "aether";
-
-    private static final String ID_CENTRAL = "central";
-
-    private static final String ID_DEFAULT_REPOS = ID + ".repositories";
-
-    private static final String PROPERTY_OFFLINE = "aether.offline";
-
-    private static final String SETTINGS_XML = "settings.xml";
 
     private static boolean OS_WINDOWS = Os.isFamily( "windows" );
 
@@ -151,13 +132,13 @@ public class AntRepoSys
 
     public static synchronized AntRepoSys getInstance( Project project )
     {
-        Object obj = project.getReference( ID );
+        Object obj = project.getReference( Names.ID );
         if ( obj instanceof AntRepoSys )
         {
             return (AntRepoSys) obj;
         }
         AntRepoSys instance = new AntRepoSys( project );
-        project.addReference( ID, instance );
+        project.addReference( Names.ID, instance );
         instance.initDefaults();
         return instance;
     }
@@ -185,15 +166,15 @@ public class AntRepoSys
         repo.setProject( project );
         repo.setId( "central" );
         repo.setUrl( "http://repo1.maven.org/maven2/" );
-        project.addReference( ID_CENTRAL, repo );
+        project.addReference( Names.ID_CENTRAL, repo );
 
         repo = new RemoteRepository();
         repo.setProject( project );
-        repo.setRefid( new Reference( project, ID_CENTRAL ) );
+        repo.setRefid( new Reference( project, Names.ID_CENTRAL ) );
         RemoteRepositories repos = new RemoteRepositories();
         repos.setProject( project );
         repos.addRemoterepo( repo );
-        project.addReference( ID_DEFAULT_REPOS, repos );
+        project.addReference( Names.ID_DEFAULT_REPOS, repos );
 
         // resolve maven.repo.local only once relative to project, as the basedir may change for <ant> tasks
         String localRepoResolved = project.getProperty( "maven.repo.local.resolved" );
@@ -269,7 +250,7 @@ public class AntRepoSys
 
     private boolean isOffline()
     {
-        String prop = project.getProperty( PROPERTY_OFFLINE );
+        String prop = project.getProperty( Names.PROPERTY_OFFLINE );
         if ( prop != null )
         {
             return Boolean.parseBoolean( prop );
@@ -349,7 +330,7 @@ public class AntRepoSys
 
         for ( Proxy proxy : proxies )
         {
-            selector.add( toProxy( proxy ), proxy.getNonProxyHosts() );
+            selector.add( ConverterUtils.toProxy( proxy ), proxy.getNonProxyHosts() );
         }
 
         Settings settings = getSettings();
@@ -396,7 +377,7 @@ public class AntRepoSys
             List<String> servers = auth.getServers();
             if ( !servers.isEmpty() )
             {
-                org.sonatype.aether.repository.Authentication a = toAuth( auth );
+                org.sonatype.aether.repository.Authentication a = ConverterUtils.toAuthentication( auth );
                 for ( String server : servers )
                 {
                     if ( ids.add( server ) )
@@ -419,162 +400,6 @@ public class AntRepoSys
         return new ConservativeAuthenticationSelector( selector );
     }
 
-    public org.sonatype.aether.graph.Dependency toDependency( Dependency dependency, List<Exclusion> exclusions,
-                                                              RepositorySystemSession session )
-    {
-        return new org.sonatype.aether.graph.Dependency( toArtifact( dependency, session.getArtifactTypeRegistry() ),
-                                                         dependency.getScope(), false,
-                                                         toExclusions( dependency.getExclusions(), exclusions ) );
-    }
-
-    private Collection<org.sonatype.aether.graph.Exclusion> toExclusions( Collection<Exclusion> exclusions1,
-                                                                          Collection<Exclusion> exclusions2 )
-    {
-        Collection<org.sonatype.aether.graph.Exclusion> results =
-            new LinkedHashSet<org.sonatype.aether.graph.Exclusion>();
-        if ( exclusions1 != null )
-        {
-            for ( Exclusion exclusion : exclusions1 )
-            {
-                results.add( toExclusion( exclusion ) );
-            }
-        }
-        if ( exclusions2 != null )
-        {
-            for ( Exclusion exclusion : exclusions2 )
-            {
-                results.add( toExclusion( exclusion ) );
-            }
-        }
-        return results;
-    }
-
-    private org.sonatype.aether.graph.Exclusion toExclusion( Exclusion exclusion )
-    {
-        return new org.sonatype.aether.graph.Exclusion( exclusion.getGroupId(), exclusion.getArtifactId(),
-                                                        exclusion.getClassifier(), exclusion.getExtension() );
-    }
-
-    private org.sonatype.aether.artifact.Artifact toArtifact( Dependency dependency, ArtifactTypeRegistry types )
-    {
-        ArtifactType type = types.get( dependency.getType() );
-        if ( type == null )
-        {
-            type = new DefaultArtifactType( dependency.getType() );
-        }
-
-        Artifact artifact =
-            new DefaultArtifact( dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
-                                 dependency.getVersion(), type );
-
-        if ( "system".equals( dependency.getScope() ) )
-        {
-            artifact = artifact.setFile( dependency.getSystemPath() );
-        }
-
-        return artifact;
-    }
-
-    private org.sonatype.aether.repository.Proxy toProxy( Proxy proxy )
-    {
-        if ( proxy == null )
-        {
-            return null;
-        }
-        return new org.sonatype.aether.repository.Proxy( proxy.getType(), proxy.getHost(), proxy.getPort(),
-                                                         toAuth( proxy.getAuthentication() ) );
-    }
-
-    private org.sonatype.aether.repository.Authentication toAuth( Authentication auth )
-    {
-        if ( auth == null )
-        {
-            return null;
-        }
-        return new org.sonatype.aether.repository.Authentication( auth.getUsername(), auth.getPassword(),
-                                                                  auth.getPrivateKeyFile(), auth.getPassphrase() );
-    }
-
-    private RemoteRepositories getRepos( RemoteRepositories repos )
-    {
-        if ( repos == null )
-        {
-            Object obj = project.getReference( ID_DEFAULT_REPOS );
-            if ( obj instanceof RemoteRepositories )
-            {
-                repos = (RemoteRepositories) obj;
-            }
-        }
-        return repos;
-    }
-
-    public org.sonatype.aether.repository.RemoteRepository toDistRepo( RemoteRepository repo,
-                                                                       RepositorySystemSession session )
-    {
-        org.sonatype.aether.repository.RemoteRepository result = toRepo( repo );
-        result.setAuthentication( session.getAuthenticationSelector().getAuthentication( result ) );
-        result.setProxy( session.getProxySelector().getProxy( result ) );
-        return result;
-    }
-
-    public List<org.sonatype.aether.repository.RemoteRepository> toRepos( RemoteRepositories repos,
-                                                                          RepositorySystemSession session )
-    {
-        repos = getRepos( repos );
-
-        List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
-        if ( repos != null )
-        {
-            repositories = repos.getRepositories();
-        }
-
-        List<org.sonatype.aether.repository.RemoteRepository> results =
-            new ArrayList<org.sonatype.aether.repository.RemoteRepository>();
-        for ( RemoteRepository repo : repositories )
-        {
-            results.add( toRepo( repo ) );
-        }
-
-        results =
-            getRemoteRepoMan().aggregateRepositories( session,
-                                                      Collections.<org.sonatype.aether.repository.RemoteRepository> emptyList(),
-                                                      results, true );
-
-        return results;
-    }
-
-    private org.sonatype.aether.repository.RemoteRepository toRepo( RemoteRepository repo )
-    {
-        org.sonatype.aether.repository.RemoteRepository result = new org.sonatype.aether.repository.RemoteRepository();
-        result.setId( repo.getId() );
-        result.setContentType( repo.getType() );
-        result.setUrl( repo.getUrl() );
-        result.setPolicy( true,
-                          toPolicy( repo.getSnapshotPolicy(), repo.isSnapshots(), repo.getUpdates(),
-                                    repo.getChecksums() ) );
-        result.setPolicy( false,
-                          toPolicy( repo.getReleasePolicy(), repo.isReleases(), repo.getUpdates(), repo.getChecksums() ) );
-        result.setAuthentication( toAuth( repo.getAuthentication() ) );
-        return result;
-    }
-
-    private RepositoryPolicy toPolicy( RemoteRepository.Policy policy, boolean enabled, String updates, String checksums )
-    {
-        if ( policy != null )
-        {
-            enabled = policy.isEnabled();
-            if ( policy.getChecksums() != null )
-            {
-                checksums = policy.getChecksums();
-            }
-            if ( policy.getUpdates() != null )
-            {
-                updates = policy.getUpdates();
-            }
-        }
-        return new RepositoryPolicy( enabled, updates, checksums );
-    }
-
     public synchronized void setUserSettings( File file )
     {
         if ( !eq( this.userSettings, file ) )
@@ -588,17 +413,7 @@ public class AntRepoSys
     {
         if ( userSettings == null )
         {
-            File userHome = new File( project.getProperty( "user.home" ) );
-            File file = new File( new File( userHome, ".ant" ), SETTINGS_XML );
-            if ( file.isFile() )
-            {
-                return file;
-            }
-            else
-            {
-                return new File( new File( userHome, ".m2" ), SETTINGS_XML );
-            }
-
+            userSettings = AetherUtils.findUserSettings( project );
         }
         return userSettings;
     }
@@ -616,32 +431,9 @@ public class AntRepoSys
     {
         if ( globalSettings == null )
         {
-            File file = new File( new File( project.getProperty( "ant.home" ), "etc" ), SETTINGS_XML );
-            if ( file.isFile() )
-            {
-                return file;
-            }
-            else
-            {
-                String mavenHome = getMavenHome();
-                if ( mavenHome != null )
-                {
-                    return new File( new File( mavenHome, "conf" ), SETTINGS_XML );
-                }
-            }
-
+            globalSettings = AetherUtils.findGlobalSettings( project );
         }
         return globalSettings;
-    }
-
-    private String getMavenHome()
-    {
-        String mavenHome = project.getProperty( "maven.home" );
-        if ( mavenHome != null )
-        {
-            return mavenHome;
-        }
-        return System.getenv( "M2_HOME" );
     }
 
     public void addProxy( Proxy proxy )
@@ -664,11 +456,15 @@ public class AntRepoSys
         this.localRepository = localRepository;
     }
 
-    public Model loadModel( Task task, File pomFile, boolean local, RemoteRepositories repos )
+    public Model loadModel( Task task, File pomFile, boolean local, RemoteRepositories remoteRepositories )
     {
         RepositorySystemSession session = getSession( task, null );
 
-        List<org.sonatype.aether.repository.RemoteRepository> repositories = toRepos( repos, session );
+        remoteRepositories =
+            remoteRepositories == null ? AetherUtils.getDefaultRepositories( project ) : remoteRepositories;
+
+        List<org.sonatype.aether.repository.RemoteRepository> repositories =
+            ConverterUtils.toRepositories( task.getProject(), session, remoteRepositories, getRemoteRepoMan() );
 
         ModelResolver modelResolver =
             new AntModelResolver( session, "project", getSystem(), getRemoteRepoMan(), repositories );
@@ -708,7 +504,7 @@ public class AntRepoSys
         Properties props = new Properties();
         getEnvProperties( props );
         props.putAll( System.getProperties() );
-        toProps( props, project.getProperties() );
+        ConverterUtils.addProperties( props, project.getProperties() );
         return props;
     }
 
@@ -734,30 +530,20 @@ public class AntRepoSys
 
     private Properties getUserProperties()
     {
-        return toProps( null, project.getUserProperties() );
+        return ConverterUtils.addProperties( null, project.getUserProperties() );
     }
 
-    private Properties toProps( Properties props, Map<?, ?> map )
-    {
-        if ( props == null )
-        {
-            props = new Properties();
-        }
-        for ( Map.Entry<?, ?> entry : map.entrySet() )
-        {
-            if ( entry.getKey() instanceof String && entry.getValue() instanceof String )
-            {
-                props.put( entry.getKey(), entry.getValue() );
-            }
-        }
-        return props;
-    }
-
+    /**
+     * Sets the default POM.
+     */
     public void setDefaultPom( Pom pom )
     {
         this.defaultPom = pom;
     }
 
+    /**
+     * Returns the current default POM.
+     */
     public Pom getDefaultPom()
     {
         return defaultPom;
@@ -768,7 +554,11 @@ public class AntRepoSys
     {
         RepositorySystemSession session = getSession( task, localRepository );
 
-        List<org.sonatype.aether.repository.RemoteRepository> repos = toRepos( remoteRepositories, session );
+        remoteRepositories =
+            remoteRepositories == null ? AetherUtils.getDefaultRepositories( project ) : remoteRepositories;
+
+        List<org.sonatype.aether.repository.RemoteRepository> repos =
+            ConverterUtils.toRepositories( project, session, remoteRepositories, getRemoteRepoMan() );
 
         CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRequestContext( "project" );
@@ -785,7 +575,7 @@ public class AntRepoSys
             List<Exclusion> globalExclusions = dependencies.getExclusions();
             for ( Dependency dep : dependencies.getDependencies() )
             {
-                collectRequest.addDependency( toDependency( dep, globalExclusions, session ) );
+                collectRequest.addDependency( ConverterUtils.toDependency( dep, globalExclusions, session ) );
             }
 
             if ( dependencies.getPom() != null )
@@ -799,7 +589,7 @@ public class AntRepoSys
                     dependency.setGroupId( dep.getGroupId() );
                     dependency.setScope( dep.getScope() );
                     dependency.setVersion( dep.getVersion() );
-                    collectRequest.addDependency( toDependency( dependency, globalExclusions, session ) );
+                    collectRequest.addDependency( ConverterUtils.toDependency( dependency, globalExclusions, session ) );
                 }
             }
         }
