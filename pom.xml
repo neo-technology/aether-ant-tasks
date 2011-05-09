@@ -53,11 +53,6 @@ See the Apache License Version 2.0 for the specific language governing permissio
       <post>aether-user@sonatype.org</post>
       <!-- archive>?</archive -->
     </mailingList>
-    <mailingList>
-      <name>Aether Commits List</name>
-      <subscribe>aether-scm-subscribe@sonatype.org</subscribe>
-      <unsubscribe>aether-scm-unsubscribe@sonatype.org</unsubscribe>
-    </mailingList>
   </mailingLists>
 
   <scm>
