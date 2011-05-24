@@ -15,7 +15,7 @@ For the global settings, different paths will be tried:
 
 The <settings/> definition is used to change that:
     
-  <settings file="my-settings.xml" globalfile="myglobal-settings.xml" />
+    <settings file="my-settings.xml" globalfile="myglobal-settings.xml" />
 
 Some settings defined in the settings file or in the POM can also be changed inside the ant file.
 
