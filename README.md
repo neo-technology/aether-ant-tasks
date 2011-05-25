@@ -111,13 +111,13 @@ transitively.
     <dependency coords="g:a:v" />
 
     <dependency groupId="g" artifactId="a" version="v" classifier="c" type="jar" scope="runtime">
-	<exclusion coords="g:a" />
-	<exclusion groupId="g" artifactId="a" />
+        <exclusion coords="g:a" />
+        <exclusion groupId="g" artifactId="a" />
     </dependency>
 
     <dependencies id="deps">
-    	<dependency refid="first"/>
-    	<dependency refid="second"/>
+        <dependency refid="first"/>
+        <dependency refid="second"/>
     </dependencies>
 
 ## Tasks
@@ -136,12 +136,12 @@ You need to set a POM that references a file for the deploy task to work, as tha
 
     <deploy artifactsref="producedArtifacts">
         <repo refid="distrepo" authref="distauth"/>
-	<snapshotrepo refid="snaprepo">
+        <snapshotrepo refid="snaprepo">
     </deploy>
 
 ### Resolve
 
-The <resolve>-task is used to resolve and collect dependencies from remote
+The `<resolve>`-task is used to resolve and collect dependencies from remote
 servers. If no repositories are set explicitely for the task, the repositories
 referenced by "aether.repositories" are used. This contains only central by
 default, but can be overridden by supplying another repository definition with
@@ -174,7 +174,7 @@ but only one set of <dependencies/> is allowed.
     </resolve>
 
 Scope filters can be set on every target, enumerating included and/or excluded
-scope names ('provided,!system').
+scope names (e.g. 'provided,!system').
 
 The classpath attribute is a shortcut for the scope filters (e.g.
 classpath="compile" equals scope="provided,system,compile"). Valid values are
@@ -184,5 +184,6 @@ classpath="compile" equals scope="provided,system,compile"). Valid values are
         <dependencies pomRef="pom"/>
         <remoterepositories refid="all"/>
         <path refid="cp" classpath="compile" />
+        <path refid="tp" classpath="test" />
     </resolve>
 
