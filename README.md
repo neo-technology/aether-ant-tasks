@@ -16,7 +16,7 @@ For the global settings, different paths will be tried:
 
 The <settings/> definition is used to change that:
     
-    <settings file="my-settings.xml" globalfile="myglobal-settings.xml" />
+    <settings file="my-settings.xml" globalfile="myglobal-settings.xml"/>
 
 Some settings defined in the settings file or in the POM can also be changed inside the ant file.
 
@@ -26,7 +26,7 @@ Proxy definitions are used throughout the whole session. There may be multiple
 proxies set. The proxy to use will be chosen by evaluating the nonProxyHosts on
 each proxy definition.
 
-    <proxy host="" port="" type="http" nonProxyHosts="foo,bar" />
+    <proxy host="" port="" type="http" nonProxyHosts="foo,bar"/>
 
 ### Authentication
 
@@ -51,9 +51,9 @@ Remote repositories may be defined directly:
     <remoterepo id="rso" url="http://repository.sonatype.org/" type="default" releases="true" snapshots="false" updates="always" checksums="fail"/>
 
     <remoterepo id="rao" url="http://repository.apache.org/">
-        <repo:releases enabled="true" updates="daily" checksums="warn" />
-        <repo:snapshots enabled="false" />
-        <repo:authentication refid="auth" />
+        <repo:releases enabled="true" updates="daily" checksums="warn"/>
+        <repo:snapshots enabled="false"/>
+        <repo:authentication refid="auth"/>
     </remoterepo>
 
     <remoterepo id="distrepo" url="..." authref="distauth"/>
@@ -105,9 +105,9 @@ ${pom.version}. User properties defined in that pom are mapped with
 
     <artifact file="file-src.jar" type="jar" classifier="sources" id="src"/>
 
-    <artifacts pomref="pom" id="producedArtifacts">
+    <artifacts id="producedArtifacts">
         <artifact refid="src"/>
-        <artifact file="file-src.jar" />
+        <artifact file="file-src.jar"/>
     </artifacts>
 
 ### Dependencies
@@ -116,17 +116,17 @@ Dependencies are used to to create classpaths or filesets. They are used by
 the `<resolve>`-task, which collects the artifacts belonging to the dependencies
 transitively.
 
-    <dependency coords="g:a:v" />
+    <dependency coords="g:a:v"/>
 
     <dependency groupId="g" artifactId="a" version="v" classifier="c" type="jar" scope="runtime">
-        <exclusion coords="g:a" />
-        <exclusion groupId="g" artifactId="a" />
+        <exclusion coords="g:a"/>
+        <exclusion groupId="g" artifactId="a"/>
     </dependency>
 
     <dependencies id="deps">
         <dependency refid="first"/>
         <dependency refid="second"/>
-        <exclusion coords="g:a" /> <!-- global exclusion for all dependencies of this group -->
+        <exclusion coords="g:a"/> <!-- global exclusion for all dependencies of this group -->
     </dependencies>
 
 
@@ -167,19 +167,21 @@ but only one set of <dependencies/> is allowed.
 
     <resolve failOnMissingAttachments="true">
         <dependencies>
-            <dependency coords="org.apache.maven:maven-profile:2.0.6" />
-            <exclusion artifactId="junit" />
-            <exclusion groupId="org.codehaus.plexus" />
+            <dependency coords="org.apache.maven:maven-profile:2.0.6"/>
+            <exclusion artifactId="junit"/>
+            <exclusion groupId="org.codehaus.plexus"/>
         </dependencies>
-        <path refid="cp" classpath="compile" />
-        <files refid="src.files" attachments="sources" dir="target/sources" layout="{artifactId}-{classifier}.{extension}" />
-        <files refid="api.files" attachments="javadoc" dir="target/javadoc" layout="{artifactId}-{classifier}.{extension}" />
+        <path refid="cp" classpath="compile"/>
+        <files refid="src.files" attachments="sources" dir="target/sources"
+               layout="{artifactId}-{classifier}.{extension}"/>
+        <files refid="api.files" attachments="javadoc" dir="target/javadoc"
+               layout="{artifactId}-{classifier}.{extension}"/>
         <properties prefix="dep." scopes="provided,system"/>
     </resolve>
 
     <resolve dependenciesref="deps">
-        <path refid="cp.compile" classpath="compile" />
-        <path refid="cp.test" classpath="test" />
+        <path refid="cp.compile" classpath="compile"/>
+        <path refid="cp.test" classpath="test"/>
     </resolve>
 
 Scope filters can be set on every target, enumerating included and/or excluded
@@ -192,8 +194,8 @@ classpath="compile" equals scope="provided,system,compile"). Valid values are
     <resolve>
         <dependencies pomRef="pom"/>
         <remoterepositories refid="all"/>
-        <path refid="cp" classpath="compile" />
-        <path refid="tp" classpath="test" />
+        <path refid="cp" classpath="compile"/>
+        <path refid="tp" classpath="test"/>
     </resolve>
 
 The layout attribute of the `<files>` element recognizes the following placeholders to refer to the coordinates of the
