@@ -22,7 +22,7 @@
   &common;
 
   <target name="setUp">
-    <!-- touch file="${project.dir.ant}/common.xml"/-->
+    <!-- touch file="${project.dir}/common.xml"/-->
   </target>
 
   <target name="testUserSettings" depends="setUp">

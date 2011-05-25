@@ -37,16 +37,15 @@ public abstract class AntBuildsTest
 
     private static final String SETTINGS_XML = "settings.xml";
 
-    protected static File projectDir;
-
-    protected static File antDir;
+    protected static final File BUILD_DIR;
 
     static
     {
-        projectDir = new File( "." );
-        antDir = new File( projectDir, "src/test/ant" );
+        File baseDir = new File( "." ).getAbsoluteFile();
+        File projectDir = new File( baseDir, "src/test/ant" );
+        BUILD_DIR = new File( baseDir, "target/surefire" );
         System.setProperty( "project.dir", projectDir.getAbsolutePath() );
-        System.setProperty( "project.dir.ant", antDir.getAbsolutePath() );
+        System.setProperty( "build.dir", BUILD_DIR.getAbsolutePath() );
     }
 
     protected TestFileProcessor fp;

@@ -69,7 +69,7 @@ public class ResolveTest
     public void testResolveCustomFileLayout()
         throws IOException
     {
-        File dir = new File( "target/resolve-custom-layout" );
+        File dir = new File( BUILD_DIR, "resolve-custom-layout" );
         TestFileUtils.delete( dir );
         executeTarget( "testResolveCustomFileLayout" );
 
@@ -82,7 +82,7 @@ public class ResolveTest
     public void testResolveAttachments()
         throws IOException
     {
-        File dir = new File( "target/resolve-attachments" );
+        File dir = new File( BUILD_DIR, "resolve-attachments" );
         TestFileUtils.delete( dir );
         executeTarget( "testResolveAttachments" );
         

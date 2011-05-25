@@ -21,30 +21,30 @@
 
   &common;
 
-  <repo:pom file="${project.dir.ant}/dummy-pom.xml" id="pom"/>
-  <repo:artifact classifier="ant" file="${project.dir.ant}/common.xml" id="ant"/>
+  <repo:pom file="${project.dir}/dummy-pom.xml" id="pom"/>
+  <repo:artifact classifier="ant" file="${project.dir}/common.xml" id="ant"/>
 
   <target name="setUp">
-    <touch file="${project.dir.ant}/dummy-pom.xml"/>
-    <touch file="${project.dir.ant}/other-pom.xml"/>
-    <touch file="${project.dir.ant}/common.xml"/>
+    <touch file="${project.dir}/dummy-pom.xml"/>
+    <touch file="${project.dir}/other-pom.xml"/>
+    <touch file="${project.dir}/common.xml"/>
   </target>
 
   <target name="testInstallGlobalPom" depends="setUp">
-    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+    <repo:pom file="${project.dir}/dummy-pom.xml"/>
     <repo:install/>
   </target>
 
   <target name="testInstallOverrideGlobalPom" depends="setUp">
-    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
+    <repo:pom file="${project.dir}/dummy-pom.xml"/>
     <repo:install>
-      <pom file="${project.dir.ant}/other-pom.xml"/>
+      <pom file="${project.dir}/other-pom.xml"/>
     </repo:install>
   </target>
 
   <target name="testInstallOverrideGlobalPomByRef" depends="setUp">
-    <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
-    <repo:pom file="${project.dir.ant}/other-pom.xml" id="other"/>
+    <repo:pom file="${project.dir}/dummy-pom.xml"/>
+    <repo:pom file="${project.dir}/other-pom.xml" id="other"/>
     <repo:install/>
     <repo:install pomref="other"/>
   </target>
@@ -56,7 +56,7 @@
   </target>
 
   <target name="testCustomRepo" depends="setUp">
-    <repo:localrepo dir="${project.dir}/target/local-repo-custom" />
+    <repo:localrepo dir="${build.dir}/local-repo-custom" />
     <repo:install pomref="pom">
       <repo:artifact refid="ant"/>
     </repo:install>

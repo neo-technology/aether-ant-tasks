@@ -87,7 +87,7 @@ public class InstallTest
     public void testCustomRepo()
         throws IOException
     {
-        File repoPath = new File( "target/local-repo-custom" );
+        File repoPath = new File( BUILD_DIR, "local-repo-custom" );
         TestFileUtils.delete( repoPath );
 
         executeTarget( "testCustomRepo" );
