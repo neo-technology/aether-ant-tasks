@@ -291,7 +291,7 @@ public class Pom
     {
         validate();
 
-        if ( file != null && id == null )
+        if ( file != null && ( id == null || AntRepoSys.getInstance( getProject() ).getDefaultPom() == null ) )
         {
             AntRepoSys.getInstance( getProject() ).setDefaultPom( this );
         }

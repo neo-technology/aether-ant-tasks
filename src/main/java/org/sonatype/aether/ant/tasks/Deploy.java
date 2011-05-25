@@ -37,7 +37,7 @@ public class Deploy
 
         if ( repository == null )
         {
-            throw new BuildException( "You must specify the <repo id=\"...\" url=\"...\"> element"
+            throw new BuildException( "You must specify the <remoteRepo id=\"...\" url=\"...\"> element"
                 + " to denote the target repository for the deployment" );
         }
         else
@@ -50,16 +50,16 @@ public class Deploy
         }
     }
 
-    public void addRepo( RemoteRepository repository )
+    public void addRemoteRepo( RemoteRepository repository )
     {
         if ( this.repository != null )
         {
-            throw new BuildException( "You must not specify multiple <repo> elements" );
+            throw new BuildException( "You must not specify multiple <remoteRepo> elements" );
         }
         this.repository = repository;
     }
 
-    public void setRepoRef( Reference ref )
+    public void setRemoteRepoRef( Reference ref )
     {
         if ( repository == null )
         {

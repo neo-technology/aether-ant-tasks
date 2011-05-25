@@ -16,6 +16,8 @@ public class Names
 
     public static final String ID_DEFAULT_REPOS = ID + ".repositories";
 
+    public static final String ID_DEFAULT_POM = ID + ".pom";
+
     public static final String ID_CENTRAL = "central";
 
     public static final String PROPERTY_OFFLINE = "aether.offline";

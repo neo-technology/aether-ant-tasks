@@ -193,7 +193,7 @@ classpath="compile" equals scope="provided,system,compile"). Valid values are
 
     <resolve>
         <dependencies pomRef="pom"/>
-        <remoterepositories refid="all"/>
+        <remoterepos refid="all"/>
         <path refid="cp" classpath="compile"/>
         <path refid="tp" classpath="test"/>
     </resolve>

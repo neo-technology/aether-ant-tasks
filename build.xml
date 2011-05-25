@@ -10,83 +10,107 @@
 
 <project xmlns:aether="antlib:org.sonatype.aether.ant" default="install">
 
+  <!--
+  This is an example Ant build file using the Aether Ant Tasks to compile, test, install and deploy the aether-ant-tasks
+  project itself. As a prerequisite, run "mvn package" first to assemble the aether-ant-task.jar which this build file
+  will load below.
+  -->
+
   <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
     <classpath>
-      <fileset dir="target" includes="aether-ant-tasks-*.jar" />
+      <fileset dir="target" includes="aether-ant-tasks-*.jar"/>
     </classpath>
   </taskdef>
 
-  <aether:settings file="empty-settings.xml"/>
+  <property name="build.dir" location="target/ant"/>
 
-  <aether:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" />
-
-  <aether:localrepo dir="${basedir}/target/ant-build/local-repo" />
+  <aether:localrepo dir="${build.dir}/local-repo"/>
 
   <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="daily" checksums="fail"/>
 
   <aether:remoterepos id="aether.repositories">
-    <aether:remoterepo refid="rso" />
+    <aether:remoterepo refid="rso"/>
   </aether:remoterepos>
 
-  <aether:remoterepo id="dist" url="file://target/ant-build/dist-repo" />
-
-  <aether:pom file="pom.xml" id="main"/>
+  <aether:pom file="pom.xml" id="pom"/>
 
   <target name="clean">
-    <delete dir="target/ant"/>
+    <delete dir="${build.dir}"/>
   </target>
 
-  <target name="compile">
-    <mkdir dir="target/ant/classes"/>
+  <target name="process-resources">
+    <copy todir="${build.dir}/classes">
+      <fileset dir="src/main/resources"/>
+    </copy>
+  </target>
+
+  <target name="compile" depends="process-resources">
+    <mkdir dir="${build.dir}/classes"/>
 
     <aether:resolve>
       <dependencies>
-        <pom refid="main"/>
+        <pom refid="pom"/>
       </dependencies>
-      <path refid="cp.compile.main" classpath="compile" />
+      <path refid="cp.compile.main" classpath="compile"/>
     </aether:resolve>
 
-    <javac classpathref="cp.compile.main" srcdir="src/main/java" destdir="target/ant/classes"/>
+    <javac classpathref="cp.compile.main" srcdir="src/main/java" destdir="${build.dir}/classes" includeAntRuntime="false"/>
   </target>
 
-  <target name="test-compile" depends="compile">
-    <mkdir dir="target/ant/test-classes"/>
+  <target name="process-test-resources" depends="compile">
+  </target>
+
+  <target name="test-compile" depends="process-test-resources">
+    <mkdir dir="${build.dir}/test-classes"/>
 
     <aether:resolve>
       <dependencies>
-        <pom refid="main"/>
+        <pom refid="pom"/>
       </dependencies>
-      <path refid="cp.compile.test" classpath="test" />
+      <path refid="cp.compile.test" classpath="test"/>
+      <path refid="cp.runtime.test" scopes="compile,test"/>
     </aether:resolve>
 
     <path id="cp.test">
-      <path refid="cp.compile.main"/>
       <path refid="cp.compile.test"/>
-      <pathelement location="target/ant/classes"/>
-      <pathelement location="target/ant/test-classes"/>
+      <pathelement location="${build.dir}/classes"/>
     </path>
 
-    <javac classpathref="cp.test" srcdir="src/test/java" destdir="target/ant/test-classes"/>
+    <javac classpathref="cp.test" srcdir="src/test/java" destdir="${build.dir}/test-classes" includeAntRuntime="false"/>
   </target>
 
   <target name="test" depends="test-compile">
-    <junit>
+    <junit haltonfailure="true" fork="true" forkmode="once" outputtoformatters="false">
       <classpath>
-        <path refid="cp.test"/>
+        <pathelement location="${build.dir}/test-classes"/>
+        <pathelement location="${build.dir}/classes"/>
+        <path refid="cp.runtime.test"/>
       </classpath>
 
-      <formatter type="brief" usefile="false" />
+      <formatter type="brief" usefile="false"/>
 
       <batchtest>
-        <fileset dir="target/ant/test-classes" includes="**/*Test.class" />
+        <fileset dir="${build.dir}/test-classes" includes="**/*Test.class" excludes="**/AntBuildsTest*"/>
       </batchtest>
     </junit>
   </target>
 
-  <target name="install" depends="test">
-    <aether:install>
-      <pom refid="main"/>
-    </aether:install>
+  <target name="package" depends="test">
+    <jar destfile="${build.dir}/aether-ant-tasks-${pom.version}.jar" basedir="${build.dir}/classes"/>
+
+    <aether:artifacts id="output">
+      <artifact file="${build.dir}/aether-ant-tasks-${pom.version}.jar"/>
+    </aether:artifacts>
+  </target>
+
+  <target name="install" depends="package">
+    <aether:install artifactsref="output"/>
+  </target>
+
+  <target name="deploy" depends="install">
+    <aether:deploy artifactsref="output">
+      <remoteRepo id="dist" url="file:///${build.dir}/dist-repo"/>
+    </aether:deploy>
   </target>
 
 </project>

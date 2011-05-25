@@ -28,6 +28,7 @@ import org.apache.tools.ant.util.FileUtils;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.ant.AntRepoSys;
+import org.sonatype.aether.ant.Names;
 import org.sonatype.aether.ant.types.Dependencies;
 import org.sonatype.aether.ant.types.Pom;
 import org.sonatype.aether.artifact.Artifact;
@@ -89,8 +90,8 @@ public class Resolve
             log( "Using default pom for dependency resolution (" + pom.toString() + ")", Project.MSG_INFO );
             dependencies = new Dependencies();
             dependencies.setProject( getProject() );
-            getProject().addReference( "resolve.default.pom", pom );
-            dependencies.setPomRef( new Reference( getProject(), "resolve.default.pom" ) );
+            getProject().addReference( Names.ID_DEFAULT_POM, pom );
+            dependencies.setPomRef( new Reference( getProject(), Names.ID_DEFAULT_POM ) );
         }
 
         if ( dependencies != null )

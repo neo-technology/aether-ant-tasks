@@ -8,11 +8,16 @@ package org.sonatype.aether.ant;
  *   http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.sonatype.aether.transfer.AbstractTransferListener;
 import org.sonatype.aether.transfer.TransferCancelledException;
 import org.sonatype.aether.transfer.TransferEvent;
+import org.sonatype.aether.transfer.TransferResource;
 
 /**
  * @author Benjamin Bentmann
@@ -38,21 +43,38 @@ class AntTransferListener
     }
 
     @Override
+    public void transferCorrupted( TransferEvent event )
+        throws TransferCancelledException
+    {
+        TransferResource resource = event.getResource();
+
+        task.log( event.getException().getMessage() + " for " + resource.getRepositoryUrl()
+                      + resource.getResourceName(), Project.MSG_WARN );
+    }
+
+    @Override
     public void transferSucceeded( TransferEvent event )
     {
         String msg = event.getRequestType() == TransferEvent.RequestType.PUT ? "Uploaded" : "Downloaded";
         msg += " " + event.getResource().getRepositoryUrl() + event.getResource().getResourceName();
-        task.log( msg );
-    }
 
-    @Override
-    public void transferFailed( TransferEvent event )
-    {
-        String msg = "Failed to ";
-        msg += event.getRequestType() == TransferEvent.RequestType.PUT ? "upload" : "download";
-        msg += " " + event.getResource().getRepositoryUrl() + event.getResource().getResourceName();
-        msg += ": " + event.getException().getMessage();
-        task.log( msg, event.getException(), Project.MSG_ERR );
+        long contentLength = event.getTransferredBytes();
+        if ( contentLength >= 0 )
+        {
+            String len = contentLength >= 1024 ? ( ( contentLength + 1023 ) / 1024 ) + " KB" : contentLength + " B";
+
+            String throughput = "";
+            long duration = System.currentTimeMillis() - event.getResource().getTransferStartTime();
+            if ( duration > 0 )
+            {
+                DecimalFormat format = new DecimalFormat( "0.0", new DecimalFormatSymbols( Locale.ENGLISH ) );
+                double kbPerSec = ( contentLength / 1024.0 ) / ( duration / 1000.0 );
+                throughput = " at " + format.format( kbPerSec ) + " KB/sec";
+            }
+
+            msg += " (" + len + throughput + ")";
+        }
+        task.log( msg );
     }
 
 }
