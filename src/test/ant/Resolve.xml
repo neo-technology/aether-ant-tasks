@@ -31,7 +31,7 @@
   </target>
 
   <target name="testResolveGlobalPom">
-    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:pom file="${project.dir.ant}/pom.xml"/>
     <repo:resolve>
       <properties prefix="test.resolve.path" classpath="compile"/>	
     </repo:resolve>
@@ -41,22 +41,22 @@
     <repo:pom file="${project.dir.ant}/dummy-pom.xml"/>
     <repo:resolve>
       <dependencies>
-        <pom file="${project.dir}/pom.xml"/>
+        <pom file="${project.dir.ant}/pom.xml"/>
       </dependencies>
       <properties prefix="test.resolve.path" classpath="compile"/>	
     </repo:resolve>
   </target>
 
   <target name="testResolveGlobalPomIntoOtherLocalRepo">
-    <repo:localrepo dir="${project.dir}/target/resolvetest-local-repo"/>
-    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:localrepo dir="${project.dir.ant}/target/resolvetest-local-repo"/>
+    <repo:pom file="${project.dir.ant}/pom.xml"/>
     <repo:resolve>
       <properties prefix="test.resolve.path" classpath="compile"/>	
     </repo:resolve>
   </target>
 
   <target name="testResolveCustomFileLayout">
-    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:pom file="${project.dir.ant}/pom.xml"/>
     <repo:resolve>
       <files dir="${project.dir}/target/resolve-custom-layout/" layout="{groupId}/{artifactId}/{groupIdDirs}/{extension}"/>
     </repo:resolve>
@@ -73,7 +73,7 @@
   </target>
 
   <target name="testResolvePath">
-    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:pom file="${project.dir.ant}/pom.xml"/>
     <repo:resolve>
       <path refid="out" classpath="compile"/>	
     </repo:resolve>
