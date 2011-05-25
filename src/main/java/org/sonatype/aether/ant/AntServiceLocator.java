@@ -12,9 +12,9 @@ package org.sonatype.aether.ant;
  * You may elect to redistribute this code under either of these licenses.
  *******************************************************************************/
 
+import org.apache.maven.repository.internal.DefaultServiceLocator;
 import org.apache.tools.ant.Project;
 import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 
 /**
  * @author Benjamin Bentmann

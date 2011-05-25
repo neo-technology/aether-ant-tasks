@@ -29,12 +29,7 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.resolution.ModelResolver;
-import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
-import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
-import org.apache.maven.repository.internal.DefaultVersionResolver;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
-import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
-import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
@@ -67,11 +62,7 @@ import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
-import org.sonatype.aether.impl.ArtifactDescriptorReader;
-import org.sonatype.aether.impl.MetadataGeneratorFactory;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
-import org.sonatype.aether.impl.VersionRangeResolver;
-import org.sonatype.aether.impl.VersionResolver;
 import org.sonatype.aether.repository.AuthenticationSelector;
 import org.sonatype.aether.repository.LocalRepositoryManager;
 import org.sonatype.aether.repository.MirrorSelector;
@@ -151,12 +142,6 @@ public class AntRepoSys
         locator.setServices( Logger.class, new AntLogger( project ) );
         locator.setServices( ModelBuilder.class, modelBuilder );
         locator.setServices( WagonProvider.class, new AntWagonProvider() );
-        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
-        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
-        locator.addService( VersionResolver.class, DefaultVersionResolver.class );
-        locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
-        locator.addService( MetadataGeneratorFactory.class, SnapshotMetadataGeneratorFactory.class );
-        locator.addService( MetadataGeneratorFactory.class, VersionsMetadataGeneratorFactory.class );
         locator.addService( RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class );
     }
 
