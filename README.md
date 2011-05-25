@@ -2,6 +2,7 @@
 
 The Aether Ant tasks use the Aether library to resolve dependencies and install and deploy locally built artifacts.
 
+
 ## Settings
 
 The Ant tasks are tightly integrated with the usual maven settings.xml. By
@@ -32,7 +33,7 @@ each proxy definition.
 Authentication elements are used to access remote repositories. Every
 authentication definition will be added globally and chosen based on the
 'servers' attribute. If this attribute is not set, an authentication has to be
-referenced explicitely to be used.
+referenced explicitly to be used.
 
     <authentication username="login" password="pw" id="auth"/>
     <authentication privateKeyFile="file.pk" passphrase="phrase" servers="distrepo" id="distauth"/>
@@ -70,6 +71,13 @@ remote repository:
 
     <mirror id="" url="" mirrorOf=""/>
 
+### Offline Mode
+
+To suppress any network activity and only use already cached artifacts/metadata, you can use a boolean property:
+
+    <property name="aether.offline" value="true"/>
+
+
 ## Project
 
 Project settings deal with locally availabe information about the build.
@@ -91,7 +99,7 @@ interpolated from that POM are available for the ant build, e.g.
 ${pom.version}. User properties defined in that pom are mapped with
 "pom.properties." as prefix.
 
-### Attached Artifacts
+### Output Artifacts
 
 `<artifact>` elements define the artifacts produced by this build that should be installed or deployed.
 
@@ -118,11 +126,11 @@ transitively.
     <dependencies id="deps">
         <dependency refid="first"/>
         <dependency refid="second"/>
+        <exclusion coords="g:a" /> <!-- global exclusion for all dependencies of this group -->
     </dependencies>
 
+
 ## Tasks
-
-
 
 ### Install
 
@@ -141,8 +149,8 @@ You need to set a POM that references a file for the deploy task to work, as tha
 
 ### Resolve
 
-The `<resolve>`-task is used to resolve and collect dependencies from remote
-servers. If no repositories are set explicitely for the task, the repositories
+The `<resolve>`-task is used to collect and resolve dependencies from remote
+servers. If no repositories are set explicitly for the task, the repositories
 referenced by "aether.repositories" are used. This contains only central by
 default, but can be overridden by supplying another repository definition with
 this id. 
@@ -150,21 +158,22 @@ this id.
 
 This task is able to assemble the collected dependencies in three different ways:
 
-* Classpath: The <path> element defines a classpath with all resolved dependencies.
-* Files: <files> will assemble a fileset containing all resolved dependencies.
-* Properties: <properties> will set properties with the given prefix and the coordinates to the path to the resolved file.
+* Classpath: The `<path>` element defines a classpath with all resolved dependencies.
+* Files: `<files>` will assemble a fileset containing all resolved dependencies.
+* Properties: `<properties>` will set properties with the given prefix and the coordinates to the path to the resolved file.
 
 These targets may also be mentioned more than once for the same resolve task,
 but only one set of <dependencies/> is allowed.
 
-    <resolve>
+    <resolve failOnMissingAttachments="true">
         <dependencies>
             <dependency coords="org.apache.maven:maven-profile:2.0.6" />
             <exclusion artifactId="junit" />
             <exclusion groupId="org.codehaus.plexus" />
         </dependencies>
         <path refid="cp" classpath="compile" />
-        <files refid="files" attachments="javadoc" dir="target/sources" layout="{artifactId}-{classifier}.{extension}" />
+        <files refid="src.files" attachments="sources" dir="target/sources" layout="{artifactId}-{classifier}.{extension}" />
+        <files refid="api.files" attachments="javadoc" dir="target/javadoc" layout="{artifactId}-{classifier}.{extension}" />
         <properties prefix="dep." scopes="provided,system"/>
     </resolve>
 
@@ -174,7 +183,7 @@ but only one set of <dependencies/> is allowed.
     </resolve>
 
 Scope filters can be set on every target, enumerating included and/or excluded
-scope names (e.g. 'provided,!system').
+scope names. Exclusions are denoted by prefixing the scope name with '-' or '!' (e.g. 'provided,!system').
 
 The classpath attribute is a shortcut for the scope filters (e.g.
 classpath="compile" equals scope="provided,system,compile"). Valid values are
@@ -186,4 +195,15 @@ classpath="compile" equals scope="provided,system,compile"). Valid values are
         <path refid="cp" classpath="compile" />
         <path refid="tp" classpath="test" />
     </resolve>
+
+The layout attribute of the `<files>` element recognizes the following placeholders to refer to the coordinates of the
+currently processed artifact:
+
+* {groupId}, e.g. "org.sonatype.aether"
+* {groupIdDirs}, e.g. "org/sonatype/aether"
+* {artifactId}, e.g. "aether-api"
+* {version}, e.g. "1.12-20110419.181353-123"
+* {baseVersion}, e.g. "1.12-SNAPSHOT"
+* {extension}, e.g. "jar"
+* {classifier}, e.g. "sources"
 
