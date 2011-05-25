@@ -93,19 +93,19 @@ ${pom.version}. User properties defined in that pom are mapped with
 
 ### Attached Artifacts
 
-<artifact> elements define the artifacts produced by this build that should be installed or deployed.
+`<artifact>` elements define the artifacts produced by this build that should be installed or deployed.
 
     <artifact file="file-src.jar" type="jar" classifier="sources" id="src"/>
 
     <artifacts pomref="pom" id="producedArtifacts">
         <artifact refid="src"/>
-	<artifact file="file-src.jar" />
+        <artifact file="file-src.jar" />
     </artifacts>
 
 ### Dependencies
 
 Dependencies are used to to create classpaths or filesets. They are used by
-the <resolve>-task, which collects the artifacts belonging to the dependencies
+the `<resolve>`-task, which collects the artifacts belonging to the dependencies
 transitively.
 
     <dependency coords="g:a:v" />
