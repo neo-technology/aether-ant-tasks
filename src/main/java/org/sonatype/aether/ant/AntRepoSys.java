@@ -573,7 +573,21 @@ public class AntRepoSys
                     dependency.setClassifier( dep.getClassifier() );
                     dependency.setGroupId( dep.getGroupId() );
                     dependency.setScope( dep.getScope() );
+                    dependency.setType( dep.getType() );
                     dependency.setVersion( dep.getVersion() );
+                    if ( dep.getSystemPath() != null && dep.getSystemPath().length() > 0 )
+                    {
+                        dependency.setSystemPath( task.getProject().resolveFile( dep.getSystemPath() ) );
+                    }
+                    for ( org.apache.maven.model.Exclusion exc : dep.getExclusions() )
+                    {
+                        Exclusion exclusion = new Exclusion();
+                        exclusion.setGroupId( exc.getGroupId() );
+                        exclusion.setArtifactId( exc.getArtifactId() );
+                        exclusion.setClassifier( "*" );
+                        exclusion.setExtension( "*" );
+                        dependency.addExclusion( exclusion );
+                    }
                     collectRequest.addDependency( ConverterUtils.toDependency( dependency, globalExclusions, session ) );
                 }
             }

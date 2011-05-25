@@ -106,7 +106,7 @@ public class ResolveTest
     public void testResolvePath()
     {
         executeTarget( "testResolvePath" );
-        Map refs = getProject().getCopyOfReferences();
+        Map<?, ?> refs = getProject().getCopyOfReferences();
         Object obj = refs.get( "out" );
         assertThat( "ref 'out' is no path", obj, instanceOf( Path.class ) );
         Path path = (Path) obj;

@@ -511,6 +511,8 @@ public class Resolve
             {
                 createRequests( child, parents );
             }
+
+            parents.removeFirst();
         }
 
         public List<ArtifactRequest> getRequests()

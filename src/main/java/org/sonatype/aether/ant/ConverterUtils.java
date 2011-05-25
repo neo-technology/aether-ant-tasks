@@ -33,6 +33,7 @@ import org.sonatype.aether.artifact.ArtifactType;
 import org.sonatype.aether.artifact.ArtifactTypeRegistry;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
 import org.sonatype.aether.repository.RepositoryPolicy;
+import org.sonatype.aether.util.artifact.ArtifactProperties;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.DefaultArtifactType;
 
@@ -47,14 +48,15 @@ public class ConverterUtils
             type = new DefaultArtifactType( dependency.getType() );
         }
 
+        Map<String, String> props = null;
+        if ( "system".equals( dependency.getScope() ) && dependency.getSystemPath() != null )
+        {
+            props = Collections.singletonMap( ArtifactProperties.LOCAL_PATH, dependency.getSystemPath().getPath() );
+        }
+
         Artifact artifact =
             new DefaultArtifact( dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
-                                 dependency.getVersion(), type );
-
-        if ( "system".equals( dependency.getScope() ) )
-        {
-            artifact = artifact.setFile( dependency.getSystemPath() );
-        }
+                                 dependency.getVersion(), props, type );
 
         return artifact;
     }

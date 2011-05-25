@@ -41,5 +41,13 @@
       <artifactId>aether-util</artifactId>
       <version>${aetherVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-system</artifactId>
+      <version>${aetherVersion}</version>
+      <type>pom</type>
+      <scope>system</scope>
+      <systemPath>${basedir}/pom.xml</systemPath>
+    </dependency>
   </dependencies>
 </project>
