@@ -18,25 +18,25 @@
 
 <project xmlns:repo="antlib:org.sonatype.aether.ant">
 
-	&common;
-	
+  &common;
+  
   <target name="testPom">
     <repo:pom file="${project.dir}/reactor/pom1.xml"/>
   </target>
-	
+  
   <target name="testArtifact">
     <repo:pom file="${project.dir}/reactor/pom1.xml" id="pom"/>
-  	<repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml"/>
+    <repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml"/>
   </target>
-	
+  
   <target name="testArtifactInMemoryPom">
     <repo:pom groupid="test" artifactid="test" version="0.1-SNAPSHOT" id="pom"/>
-  	<repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml"/>
+    <repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml"/>
   </target>
 
   <target name="testResolveArtifact">
     <repo:pom file="${project.dir}/reactor/pom1.xml" id="pom"/>
-  	<repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml" type="jar"/>
+    <repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml" type="jar"/>
     <repo:pom file="${project.dir}/reactor/pom2.xml" id="pom2"/>
 
     <repo:resolve>
@@ -47,7 +47,7 @@
 
   <target name="testResolveArtifactInMemoryPom">
     <repo:pom groupid="test" artifactid="test" version="0.1-SNAPSHOT" id="pom"/>
-  	<repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml" type="jar"/>
+    <repo:artifact pomref="pom" file="${project.dir}/reactor/pom1.xml" type="jar"/>
     <repo:pom file="${project.dir}/reactor/pom2.xml" id="pom2"/>
 
     <repo:resolve>
@@ -55,6 +55,5 @@
       <properties prefix="resolve"/>
     </repo:resolve>
   </target>
-
 
 </project>

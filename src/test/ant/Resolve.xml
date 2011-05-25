@@ -13,7 +13,7 @@
 -->
 
 <!DOCTYPE project [
-<!ENTITY common SYSTEM "common.xml">
+       <!ENTITY common SYSTEM "common.xml">
 ]>
 
 <project xmlns:repo="antlib:org.sonatype.aether.ant">
@@ -32,7 +32,7 @@
   <target name="testResolveGlobalPom">
     <repo:pom file="${project.dir}/pom.xml"/>
     <repo:resolve>
-      <properties prefix="test.resolve.path" classpath="compile"/>	
+      <properties prefix="test.resolve.path" classpath="compile"/>
     </repo:resolve>
   </target>
 
@@ -42,7 +42,7 @@
       <dependencies>
         <pom file="${project.dir}/pom.xml"/>
       </dependencies>
-      <properties prefix="test.resolve.path" classpath="compile"/>	
+      <properties prefix="test.resolve.path" classpath="compile"/>
     </repo:resolve>
   </target>
 
@@ -50,7 +50,7 @@
     <repo:localrepo dir="${build.dir}/resolvetest-local-repo"/>
     <repo:pom file="${project.dir}/pom.xml"/>
     <repo:resolve>
-      <properties prefix="test.resolve.path" classpath="compile"/>	
+      <properties prefix="test.resolve.path" classpath="compile"/>
     </repo:resolve>
   </target>
 
@@ -74,7 +74,7 @@
   <target name="testResolvePath">
     <repo:pom file="${project.dir}/pom.xml"/>
     <repo:resolve>
-      <path refid="out" classpath="compile"/>	
+      <path refid="out" classpath="compile"/>
     </repo:resolve>
     <echo>${tostring:out}</echo>
   </target>
