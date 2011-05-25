@@ -10,83 +10,83 @@
 
 <project xmlns:aether="antlib:org.sonatype.aether.ant" default="install">
 
-    <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
-        <classpath>
-            <fileset dir="target" includes="aether-ant-tasks-*.jar" />
-        </classpath>
-    </taskdef>
+  <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
+    <classpath>
+      <fileset dir="target" includes="aether-ant-tasks-*.jar" />
+    </classpath>
+  </taskdef>
 
-    <aether:settings file="empty-settings.xml"/>
+  <aether:settings file="empty-settings.xml"/>
 
-    <aether:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" />
+  <aether:mirror id="nexus" url="http://localhost:8081/nexus/content/groups/public" mirrorOf="central" />
 
-    <aether:localrepo dir="${basedir}/target/ant-build/local-repo" />
+  <aether:localrepo dir="${basedir}/target/ant-build/local-repo" />
 
-    <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="daily" checksums="fail"/>
+  <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="daily" checksums="fail"/>
 
-    <aether:remoterepos id="aether.repositories">
-        <aether:remoterepo refid="rso" />
-    </aether:remoterepos>
+  <aether:remoterepos id="aether.repositories">
+    <aether:remoterepo refid="rso" />
+  </aether:remoterepos>
 
-    <aether:remoterepo id="dist" url="file://target/ant-build/dist-repo" />
+  <aether:remoterepo id="dist" url="file://target/ant-build/dist-repo" />
 
-    <aether:pom file="pom.xml" id="main"/>
+  <aether:pom file="pom.xml" id="main"/>
 
-    <target name="clean">
-        <delete dir="target/ant"/>
-    </target>
+  <target name="clean">
+    <delete dir="target/ant"/>
+  </target>
 
-    <target name="compile">
-        <mkdir dir="target/ant/classes"/>
+  <target name="compile">
+    <mkdir dir="target/ant/classes"/>
 
-        <aether:resolve>
-            <dependencies>
-                <pom refid="main"/>
-            </dependencies>
-            <path refid="cp.compile.main" classpath="compile" />
-        </aether:resolve>
+    <aether:resolve>
+      <dependencies>
+        <pom refid="main"/>
+      </dependencies>
+      <path refid="cp.compile.main" classpath="compile" />
+    </aether:resolve>
 
-        <javac classpathref="cp.compile.main" srcdir="src/main/java" destdir="target/ant/classes"/>
-    </target>
+    <javac classpathref="cp.compile.main" srcdir="src/main/java" destdir="target/ant/classes"/>
+  </target>
 
-    <target name="test-compile" depends="compile">
-        <mkdir dir="target/ant/test-classes"/>
+  <target name="test-compile" depends="compile">
+    <mkdir dir="target/ant/test-classes"/>
 
-        <aether:resolve>
-            <dependencies>
-                <pom refid="main"/>
-            </dependencies>
-            <path refid="cp.compile.test" classpath="test" />
-        </aether:resolve>
+    <aether:resolve>
+      <dependencies>
+        <pom refid="main"/>
+      </dependencies>
+      <path refid="cp.compile.test" classpath="test" />
+    </aether:resolve>
 
-        <path id="cp.test">
-            <path refid="cp.compile.main"/>
-            <path refid="cp.compile.test"/>
-            <pathelement location="target/ant/classes"/>
-            <pathelement location="target/ant/test-classes"/>
-        </path>
+    <path id="cp.test">
+      <path refid="cp.compile.main"/>
+      <path refid="cp.compile.test"/>
+      <pathelement location="target/ant/classes"/>
+      <pathelement location="target/ant/test-classes"/>
+    </path>
 
-        <javac classpathref="cp.test" srcdir="src/test/java" destdir="target/ant/test-classes"/>
-    </target>
+    <javac classpathref="cp.test" srcdir="src/test/java" destdir="target/ant/test-classes"/>
+  </target>
 
-    <target name="test" depends="test-compile">
-        <junit>
-            <classpath>
-                <path refid="cp.test"/>
-            </classpath>
+  <target name="test" depends="test-compile">
+    <junit>
+      <classpath>
+        <path refid="cp.test"/>
+      </classpath>
 
-            <formatter type="brief" usefile="false" />
+      <formatter type="brief" usefile="false" />
 
-            <batchtest>
-                <fileset dir="target/ant/test-classes" includes="**/*Test.class" />
-            </batchtest>
-        </junit>
-    </target>
+      <batchtest>
+        <fileset dir="target/ant/test-classes" includes="**/*Test.class" />
+      </batchtest>
+    </junit>
+  </target>
 
-    <target name="install" depends="test">
-        <aether:install>
-            <pom refid="main"/>
-        </aether:install>
-    </target>
+  <target name="install" depends="test">
+    <aether:install>
+      <pom refid="main"/>
+    </aether:install>
+  </target>
 
 </project>
