@@ -219,6 +219,12 @@
       <artifactId>aether-test-util</artifactId>
       <version>${aetherVersion}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
