@@ -13,7 +13,9 @@ package org.sonatype.aether.ant.types;
  *******************************************************************************/
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -48,11 +50,20 @@ public class Dependencies
         {
             if ( getPom() != null && getPom().getFile() == null )
             {
-                throw new BuildException( "A <pom> used for dependency resolution has to be backed by a pom.xml-file" );
+                throw new BuildException( "A <pom> used for dependency resolution has to be backed by a pom.xml file" );
             }
+            Map<String, String> ids = new HashMap<String, String>();
             for ( Dependency dependency : dependencies )
             {
                 dependency.validate( task );
+                String id = dependency.getVersionlessKey();
+                String collision = ids.put( id, dependency.getVersion() );
+                if ( collision != null )
+                {
+                    throw new BuildException( "You must not declare multiple <dependency> elements"
+                        + " with the same coordinates but got " + id + " -> " + collision + " vs "
+                        + dependency.getVersion() );
+                }
             }
         }
     }

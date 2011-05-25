@@ -272,6 +272,32 @@ public class Dependency
         return systemPath;
     }
 
+    public String getVersionlessKey()
+    {
+        if ( isReference() )
+        {
+            return getRef().getVersionlessKey();
+        }
+        StringBuilder key = new StringBuilder( 128 );
+        if ( groupId != null )
+        {
+            key.append( groupId );
+        }
+        key.append( ':' );
+        if ( artifactId != null )
+        {
+            key.append( artifactId );
+        }
+        key.append( ':' );
+        key.append( ( type != null ) ? type : "jar" );
+        if ( classifier != null && classifier.length() > 0 )
+        {
+            key.append( ':' );
+            key.append( classifier );
+        }
+        return key.toString();
+    }
+
     public void addExclusion( Exclusion exclusion )
     {
         checkChildrenAllowed();
