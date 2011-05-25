@@ -556,10 +556,12 @@ public class AntRepoSys
 
         if ( dependencies != null )
         {
-
             List<Exclusion> globalExclusions = dependencies.getExclusions();
+            Collection<String> ids = new HashSet<String>();
+
             for ( Dependency dep : dependencies.getDependencies() )
             {
+                ids.add( dep.getVersionlessKey() );
                 collectRequest.addDependency( ConverterUtils.toDependency( dep, globalExclusions, session ) );
             }
 
@@ -575,6 +577,10 @@ public class AntRepoSys
                     dependency.setScope( dep.getScope() );
                     dependency.setType( dep.getType() );
                     dependency.setVersion( dep.getVersion() );
+                    if ( ids.contains( dependency.getVersionlessKey() ) )
+                    {
+                        continue;
+                    }
                     if ( dep.getSystemPath() != null && dep.getSystemPath().length() > 0 )
                     {
                         dependency.setSystemPath( task.getProject().resolveFile( dep.getSystemPath() ) );
