@@ -15,7 +15,7 @@ snippet to load it:
       ...
     </project>
 
-See the [build.xml](blob/master/build.xml) in the project sources for a complete example build script.
+See the [build.xml](/sonatype/aether-ant-tasks/blob/master/build.xml) in the project sources for a complete example build script.
 
 ## Settings
 
