@@ -1,7 +1,7 @@
 # Aether Ant Tasks
 
-The Aether Ant Tasks enable build scripts for [Apache Ant](http://ant.apache.org/) to use the Aether library to resolve
-dependencies and install and deploy locally built artifacts.
+The Aether Ant Tasks enable build scripts for [Apache Ant](http://ant.apache.org/) 1.7+ to use 
+[Sonatype Aether](http://aether.sonatype.org/) to resolve dependencies and install and deploy locally built artifacts.
 
 To integrate the tasks into your build file, copy the JAR into your project's lib directory and use the following
 snippet to load it:
