@@ -1,6 +1,7 @@
 # Aether Ant Tasks
 
-The Aether Ant tasks use the Aether library to resolve dependencies and install and deploy locally built artifacts.
+The Aether Ant Tasks enable build scripts for [Apache Ant](http://ant.apache.org/) to use the Aether library to resolve
+dependencies and install and deploy locally built artifacts.
 
 To integrate the tasks into your build file, copy the JAR into your project's lib directory and use the following
 snippet to load it:
@@ -16,8 +17,8 @@ snippet to load it:
 
 ## Settings
 
-The Ant tasks are tightly integrated with the usual maven settings.xml. By
-default, the usual $HOME/.m2/settings.xml is used for user settings. 
+The Ant tasks are tightly integrated with the usual [Apache Maven settings.xml](http://maven.apache.org/settings.html).
+By default, the usual ${user.home}/.m2/settings.xml is used for user settings. 
 
 For the global settings, different paths will be tried:
 
@@ -29,7 +30,7 @@ The <settings/> definition is used to change that:
     
     <settings file="my-settings.xml" globalfile="myglobal-settings.xml"/>
 
-Some settings defined in the settings file or in the POM can also be changed inside the ant file.
+Some settings defined in the settings file or in the POM can also be changed inside the Ant file.
 
 ### Proxy Settings
 
