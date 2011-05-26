@@ -99,9 +99,11 @@
 
   <target name="package" depends="test">
     <jar destfile="${build.dir}/aether-ant-tasks-${pom.version}.jar" basedir="${build.dir}/classes"/>
+    <jar destfile="${build.dir}/aether-ant-tasks-${pom.version}-sources.jar" basedir="src/main/java"/>
 
     <aether:artifacts id="output">
       <artifact file="${build.dir}/aether-ant-tasks-${pom.version}.jar"/>
+      <artifact file="${build.dir}/aether-ant-tasks-${pom.version}-sources.jar" classifier="sources"/>
     </aether:artifacts>
   </target>
 
