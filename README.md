@@ -67,6 +67,8 @@ remote repository:
         <remoterepo refid="distrepo"/>
     </remoterepos>
 
+*Note:* Currently, only file:, http: and https: protocols are supported for remote repositories.
+
 ### Mirrors
 
     <mirror id="" url="" mirrorOf=""/>
@@ -94,10 +96,10 @@ that POM will be used by default for install and deploy.
 
 #### Properties
 
-If a POM is set via a file parameter and without any id, the properties
-interpolated from that POM are available for the ant build, e.g.
-${pom.version}. User properties defined in that pom are mapped with
-"pom.properties." as prefix.
+If a POM is set via a file parameter its effective model is made available as properties to the Ant project.
+The properties are prefixed with the ref id of the `<pom>` element, e.g. ${pom.version} for the example above.
+Likewise, project properties defined in the POM are accessible via the prefix "pom.properties.". If no id has been
+assigned, the properties use the prefix "pom." by default.
 
 ### Output Artifacts
 
