@@ -18,7 +18,7 @@
 
   <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
     <classpath>
-      <fileset dir="target" includes="aether-ant-tasks-*.jar"/>
+      <fileset dir="target" includes="aether-ant-tasks-*uber.jar"/>
     </classpath>
   </taskdef>
 

@@ -245,6 +245,8 @@
             </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>uber</shadedClassifierName>
               <filters>
                 <filter>
                   <artifact>org.codehaus.plexus:plexus-container-default</artifact>
