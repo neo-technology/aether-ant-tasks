@@ -262,7 +262,7 @@
                   <pattern>org.sonatype.aether</pattern>
                   <shadedPattern>org.sonatype.aether.ant.org.sonatype.aether</shadedPattern>
                   <excludes>
-                    <exclude>org.sonatype.aether.ant.*</exclude>
+                    <exclude>org.sonatype.aether.ant.**</exclude>
                   </excludes>
                 </relocation>
                 <relocation>
