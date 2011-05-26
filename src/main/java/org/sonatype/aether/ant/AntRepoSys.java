@@ -57,8 +57,8 @@ import org.sonatype.aether.ant.types.RemoteRepository;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.connector.wagon.WagonProvider;
-import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
+import org.sonatype.aether.connector.async.AsyncRepositoryConnectorFactory;
+import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.impl.RemoteRepositoryManager;
 import org.sonatype.aether.repository.AuthenticationSelector;
 import org.sonatype.aether.repository.LocalRepositoryManager;
@@ -138,8 +138,8 @@ public class AntRepoSys
         locator = new AntServiceLocator( project );
         locator.setServices( Logger.class, new AntLogger( project ) );
         locator.setServices( ModelBuilder.class, modelBuilder );
-        locator.setServices( WagonProvider.class, new AntWagonProvider() );
-        locator.addService( RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class );
+        locator.addService( RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class );
+        locator.addService( RepositoryConnectorFactory.class, AsyncRepositoryConnectorFactory.class );
     }
 
     private void initDefaults()
