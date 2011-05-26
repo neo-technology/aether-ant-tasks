@@ -34,11 +34,6 @@
     </dependency>
     <dependency>
       <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-util</artifactId>
-      <version>${aetherVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-system</artifactId>
       <version>${aetherVersion}</version>
       <type>pom</type>
