@@ -15,6 +15,8 @@ snippet to load it:
       ...
     </project>
 
+See the [build.xml](blob/master/build.xml) in the project sources for a complete example build script.
+
 ## Settings
 
 The Ant tasks are tightly integrated with the usual [Apache Maven settings.xml](http://maven.apache.org/settings.html).

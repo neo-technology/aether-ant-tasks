@@ -11,9 +11,9 @@
 <project xmlns:aether="antlib:org.sonatype.aether.ant" default="deploy">
 
   <!--
-  This is an example Ant build file using the Aether Ant Tasks to compile, test, install and deploy the aether-ant-tasks
-  project itself. As a prerequisite, run "mvn package" first to assemble the aether-ant-task.jar which this build file
-  will load below.
+  This is an example Ant build file using the Aether Ant Tasks to compile, test, install and deploy the
+  aether-ant-tasks project itself. As a prerequisite, run "mvn package" first to assemble the
+  aether-ant-task.jar which this build file will load below.
   -->
 
   <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
@@ -26,7 +26,8 @@
 
   <aether:localrepo dir="${build.dir}/local-repo"/>
 
-  <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default" releases="true" snapshots="true" updates="daily" checksums="fail"/>
+  <aether:remoterepo id="rso" url="http://repository.sonatype.org/content/groups/public" type="default"
+                     releases="true" snapshots="true" updates="daily" checksums="fail"/>
 
   <aether:remoterepos id="aether.repositories">
     <aether:remoterepo refid="rso"/>
