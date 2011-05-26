@@ -2,6 +2,20 @@
 
 The Aether Ant tasks use the Aether library to resolve dependencies and install and deploy locally built artifacts.
 
+To integrate the tasks into your build file, copy the JAR into your project's lib directory and use the following
+snippet to load it:
+
+    <project xmlns:aether="antlib:org.sonatype.aether.ant" ...>
+    
+      <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
+        <classpath>
+          <fileset dir="lib" includes="aether-ant-tasks-*.jar"/>
+        </classpath>
+      </taskdef>
+    
+      ...
+    
+    </project>
 
 ## Settings
 
