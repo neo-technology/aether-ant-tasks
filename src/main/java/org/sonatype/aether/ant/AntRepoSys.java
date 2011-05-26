@@ -11,6 +11,7 @@ package org.sonatype.aether.ant;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -204,8 +205,12 @@ public class AntRepoSys
     {
         DefaultRepositorySystemSession session = new MavenRepositorySystemSession();
 
-        session.getConfigProperties().put( ConfigurationProperties.USER_AGENT,
-                                           "Apache-Ant/" + project.getProperty( "ant.version" ) + " Aether" );
+        Map<Object, Object> configProps = new LinkedHashMap<Object, Object>();
+        configProps.put( ConfigurationProperties.USER_AGENT, getUserAgent() );
+        configProps.putAll( System.getProperties() );
+        configProps.putAll( (Map<?, ?>) project.getProperties() );
+        configProps.putAll( (Map<?, ?>) project.getUserProperties() );
+        session.setConfigProps( configProps );
 
         session.setNotFoundCachingEnabled( false );
         session.setTransferErrorCachingEnabled( false );
@@ -227,6 +232,21 @@ public class AntRepoSys
         session.setWorkspaceReader( ProjectWorkspaceReader.getInstance() );
 
         return session;
+    }
+
+    private String getUserAgent()
+    {
+        StringBuilder buffer = new StringBuilder( 128 );
+
+        buffer.append( "Apache-Ant/" ).append( project.getProperty( "ant.version" ) );
+        buffer.append( " (" );
+        buffer.append( "Java " ).append( System.getProperty( "java.version" ) );
+        buffer.append( "; " );
+        buffer.append( System.getProperty( "os.name" ) ).append( " " ).append( System.getProperty( "os.version" ) );
+        buffer.append( ")" );
+        buffer.append( " Aether" );
+
+        return buffer.toString();
     }
 
     private boolean isOffline()
