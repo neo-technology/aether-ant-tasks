@@ -279,6 +279,7 @@ public class RemoteRepository
 
     public void setAuthRef( Reference ref )
     {
+        checkAttributesAllowed();
         if ( authentication == null )
         {
             authentication = new Authentication();

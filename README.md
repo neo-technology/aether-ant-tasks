@@ -157,7 +157,7 @@ You need to set a POM that references a file for the install task to work.
 You need to set a POM that references a file for the deploy task to work, as that POM file will be deployed to repository.
 
     <deploy artifactsref="producedArtifacts">
-        <remoterepo refid="distrepo" authref="distauth"/>
+        <remoterepo refid="distrepo"/>
         <snapshotrepo refid="snaprepo">
     </deploy>
 
