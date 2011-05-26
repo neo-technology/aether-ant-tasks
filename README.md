@@ -6,15 +6,12 @@ To integrate the tasks into your build file, copy the JAR into your project's li
 snippet to load it:
 
     <project xmlns:aether="antlib:org.sonatype.aether.ant" ...>
-    
       <taskdef uri="antlib:org.sonatype.aether.ant" resource="org/sonatype/aether/ant/antlib.xml">
         <classpath>
           <fileset dir="lib" includes="aether-ant-tasks-*.jar"/>
         </classpath>
       </taskdef>
-    
       ...
-    
     </project>
 
 ## Settings
@@ -65,9 +62,9 @@ Remote repositories may be defined directly:
     <remoterepo id="rso" url="http://repository.sonatype.org/" type="default" releases="true" snapshots="false" updates="always" checksums="fail"/>
 
     <remoterepo id="rao" url="http://repository.apache.org/">
-        <repo:releases enabled="true" updates="daily" checksums="warn"/>
-        <repo:snapshots enabled="false"/>
-        <repo:authentication refid="auth"/>
+        <releases enabled="true" updates="daily" checksums="warn"/>
+        <snapshots enabled="false"/>
+        <authentication refid="auth"/>
     </remoterepo>
 
     <remoterepo id="distrepo" url="..." authref="distauth"/>
@@ -159,7 +156,7 @@ You need to set a POM that references a file for the install task to work.
 You need to set a POM that references a file for the deploy task to work, as that POM file will be deployed to repository.
 
     <deploy artifactsref="producedArtifacts">
-        <repo refid="distrepo" authref="distauth"/>
+        <remoterepo refid="distrepo" authref="distauth"/>
         <snapshotrepo refid="snaprepo">
     </deploy>
 
