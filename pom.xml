@@ -81,18 +81,8 @@
 
     <!-- VERSION PROPERTIES -->
     <mavenVersion>3.0.3</mavenVersion>
-    <aetherVersion>1.11</aetherVersion>
+    <aetherVersion>1.12</aetherVersion>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.ning</groupId>
-        <artifactId>async-http-client</artifactId>
-        <version>1.6.3</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
