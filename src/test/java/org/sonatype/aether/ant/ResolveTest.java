@@ -8,9 +8,6 @@ package org.sonatype.aether.ant;
  *   http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,6 +16,16 @@ import java.util.Map;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.sonatype.aether.test.util.TestFileUtils;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class ResolveTest
     extends AntBuildsTest
@@ -81,9 +88,9 @@ public class ResolveTest
         File dir = new File( BUILD_DIR, "resolve-attachments" );
         TestFileUtils.delete( dir );
         executeTarget( "testResolveAttachments" );
-        
+
         File jdocDir = new File(dir, "javadoc");
-        
+
         assertThat( "aether-api-javadoc was not saved with custom file layout",
                     new File( jdocDir, "org.sonatype.aether-aether-api-javadoc.jar" ).exists() );
 
@@ -111,4 +118,12 @@ public class ResolveTest
                     hasItemInArray( allOf( containsString( "aether-api" ), endsWith( ".jar" ) ) ) );
     }
 
+    public void testResolveNonTransitive()
+    {
+        executeTarget( "testResolveNonTransitive" );
+        Object out = getProject().getReference( "out" );
+        assertThat( "ref 'out' is no path", out, instanceOf( Path.class ) );
+        String[] elements = ((Path) out).list();
+        assertThat( "", elements, not( hasItemInArray( containsString( "aether-spi" ) ) )  );
+    }
 }

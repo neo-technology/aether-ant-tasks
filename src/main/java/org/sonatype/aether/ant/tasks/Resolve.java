@@ -47,7 +47,7 @@ public class Resolve
     extends AbstractResolvingTask
 {
 
-    private List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
+    private final List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
 
     private boolean failOnMissingAttachments;
 
@@ -176,9 +176,16 @@ public class Resolve
     {
 
         private DependencyFilter filter;
+        private boolean transitive = true;
+
+        public void setTransitive( boolean transitive )
+        {
+            this.transitive = transitive;
+        }
 
         public boolean accept( org.sonatype.aether.graph.DependencyNode node, List<DependencyNode> parents )
         {
+            if ( !transitive && parents.size() > 1 ) return false;
             return filter == null || filter.accept( node, parents );
         }
 
@@ -263,6 +270,7 @@ public class Resolve
             this.refid = refId;
         }
 
+        @Override
         public void validate()
         {
             if ( refid == null )
@@ -271,6 +279,7 @@ public class Resolve
             }
         }
 
+        @Override
         public void process( Artifact artifact )
         {
             if ( path == null )
@@ -305,6 +314,7 @@ public class Resolve
             this.refid = refId;
         }
 
+        @Override
         public String getClassifier()
         {
             return classifier;
@@ -337,6 +347,7 @@ public class Resolve
             this.layout = new Layout( layout );
         }
 
+        @Override
         public void validate()
         {
             if ( refid == null && dir == null )
@@ -346,6 +357,7 @@ public class Resolve
             }
         }
 
+        @Override
         public void process( Artifact artifact )
         {
             if ( dir != null )
@@ -403,6 +415,7 @@ public class Resolve
             this.prefix = prefix;
         }
 
+        @Override
         public String getClassifier()
         {
             return classifier;
@@ -425,6 +438,7 @@ public class Resolve
             }
         }
 
+        @Override
         public void process( Artifact artifact )
         {
             StringBuilder buffer = new StringBuilder( 256 );
@@ -457,11 +471,11 @@ public class Resolve
     private static class Group
     {
 
-        private String classifier;
+        private final String classifier;
 
-        private List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
+        private final List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
 
-        private List<ArtifactRequest> requests = new ArrayList<ArtifactRequest>();
+        private final List<ArtifactRequest> requests = new ArrayList<ArtifactRequest>();
 
         public Group( String classifier )
         {

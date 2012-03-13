@@ -75,4 +75,11 @@
     <echo>${tostring:out}</echo>
   </target>
 
+  <target name="testResolveNonTransitive">
+    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:resolve>
+      <path transitive="false" refid="out" classpath="compile"/>
+    </repo:resolve>
+    <echo message="${toString:out}"/>
+  </target>
 </project>
