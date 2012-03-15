@@ -16,9 +16,11 @@ import java.util.Map;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.sonatype.aether.test.util.TestFileUtils;
+import sun.net.idn.StringPrep;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.everyItem;
@@ -124,6 +126,21 @@ public class ResolveTest
         Object out = getProject().getReference( "out" );
         assertThat( "ref 'out' is no path", out, instanceOf( Path.class ) );
         String[] elements = ((Path) out).list();
-        assertThat( "", elements, not( hasItemInArray( containsString( "aether-spi" ) ) )  );
+        assertThat( "transitive dependency on classpath", elements,
+                    not( hasItemInArray( containsString( "aether-spi" ) ) )  );
+    }
+
+    public void testResolveNonTransitiveAndTransitive()
+    {
+        executeTarget( "testResolveNonTransitiveAndTransitive" );
+        Object transitive = getProject().getReference( "transitive" );
+        assertThat( "ref 'transitive' is no path", transitive, instanceOf( Path.class ) );
+        Object nonTransitive = getProject().getReference( "non-transitive" );
+        assertThat( "ref 'non-transitive' is no path", nonTransitive, instanceOf( Path.class ) );
+        String[] transitivePath = ((Path) transitive).list();
+        String[] nonTransitivePath = ((Path) nonTransitive).list();
+        assertThat( transitivePath, not( arrayContaining( nonTransitivePath ) ) );
+        assertThat( "transitive dependency on classpath", nonTransitivePath,
+                    not( hasItemInArray( containsString( "aether-spi" ) ) )  );
     }
 }

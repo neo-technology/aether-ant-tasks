@@ -50,10 +50,16 @@ public class Resolve
     private final List<ArtifactConsumer> consumers = new ArrayList<ArtifactConsumer>();
 
     private boolean failOnMissingAttachments;
+    private boolean transitive = true;
 
     public void setFailOnMissingAttachments( boolean failOnMissingAttachments )
     {
         this.failOnMissingAttachments = failOnMissingAttachments;
+    }
+
+    public void setTransitive( boolean transitive )
+    {
+        this.transitive = transitive;
     }
 
     public Path createPath()
@@ -135,7 +141,7 @@ public class Resolve
 
         for ( Group group : groups.values() )
         {
-            group.createRequests( root );
+            group.createRequests( root, transitive );
         }
 
         log( "Resolving artifacts", Project.MSG_INFO );
@@ -176,16 +182,9 @@ public class Resolve
     {
 
         private DependencyFilter filter;
-        private boolean transitive = true;
-
-        public void setTransitive( boolean transitive )
-        {
-            this.transitive = transitive;
-        }
 
         public boolean accept( org.sonatype.aether.graph.DependencyNode node, List<DependencyNode> parents )
         {
-            if ( !transitive && parents.size() > 1 ) return false;
             return filter == null || filter.accept( node, parents );
         }
 
@@ -492,12 +491,12 @@ public class Resolve
             consumers.add( consumer );
         }
 
-        public void createRequests( DependencyNode node )
+        public void createRequests( DependencyNode node, boolean transitive )
         {
-            createRequests( node, new LinkedList<DependencyNode>() );
+            createRequests( node, transitive, new LinkedList<DependencyNode>() );
         }
 
-        private void createRequests( DependencyNode node, LinkedList<DependencyNode> parents )
+        private void createRequests( DependencyNode node, boolean transitive, LinkedList<DependencyNode> parents )
         {
             if ( node.getDependency() != null )
             {
@@ -516,14 +515,17 @@ public class Resolve
                 }
             }
 
-            parents.addFirst( node );
-
-            for ( DependencyNode child : node.getChildren() )
+            if ( transitive || parents.isEmpty() )
             {
-                createRequests( child, parents );
-            }
+                parents.addFirst( node );
 
-            parents.removeFirst();
+                for ( DependencyNode child : node.getChildren() )
+                {
+                    createRequests( child, transitive, parents );
+                }
+
+                parents.removeFirst();
+            }
         }
 
         public List<ArtifactRequest> getRequests()

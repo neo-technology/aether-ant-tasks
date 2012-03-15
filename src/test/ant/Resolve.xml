@@ -77,9 +77,21 @@
 
   <target name="testResolveNonTransitive">
     <repo:pom file="${project.dir}/pom.xml"/>
-    <repo:resolve>
-      <path transitive="false" refid="out" classpath="compile"/>
+    <repo:resolve transitive="false">
+      <path refid="out" classpath="compile"/>
     </repo:resolve>
     <echo message="${toString:out}"/>
+  </target>
+
+  <target name="testResolveNonTransitiveAndTransitive">
+    <repo:pom file="${project.dir}/pom.xml"/>
+    <repo:resolve transitive="true">
+      <path refid="transitive" classpath="compile"/>
+    </repo:resolve>
+    <repo:resolve transitive="false">
+      <path refid="non-transitive" classpath="compile"/>
+    </repo:resolve>
+    <echo message="Transitive:     ${toString:transitive}"/>
+    <echo message="Non-Transitive: ${toString:non-transitive}"/>
   </target>
 </project>
